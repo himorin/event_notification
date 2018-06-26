@@ -1,0 +1,36 @@
+Common tools and configurations
+======
+
+This directory contains site-wide common tools and configurations.
+
+- `Database definition`_ 
+- `Site-wide configuration`_
+
+Database definition
+------
+
+Database definition SQL is placed as `config.sql`, site administrator shall 
+create a database and tables using database tools. 
+
+Site-wide configuration
+------
+
+In this repository, only skelton named `config-skelton.json` is placed, 
+site administrator shall copy it to `config.json` and change values as 
+description below. 
+Configurations are categorized as target services, like VAPID, twilio, etc. 
+and each are wrapped as json object. 
+
+- `database`
+
+  - `db`: Database name to be used
+  - `pass`: Password for database connection
+  - `user`: Username for database connection
+
+- `twilio`
+
+  - `account`: Account id
+  - `api_fromnum`: Caller phone number
+  - `token`: Account access token
+
+
