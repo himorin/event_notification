@@ -1,0 +1,6 @@
+{
+  "id": 1,
+  "user": "atsushi.shimono",
+  "content": "Event notification 5 min before $title$",
+  "minutes": 5
+}

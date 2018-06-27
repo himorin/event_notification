@@ -1,0 +1,21 @@
+[
+  {
+    "id": 1,
+    "sid": "CAe26fcbd2b7f7c18c0407f8a7925b9758",
+    "fired": 1,
+    "target": 1530104100,
+    "content": "Hi user, it's time of meeting. Let's join!",
+    "tid": 1,
+    "source": "web:self",
+    "url": "https://pfspipe.ipmu.jp/",
+    "description": "Sample notification event"
+  },
+  {
+    "id": 2,
+    "fired": 0,
+    "target": 1530204100,
+    "content": "Hi user, it's another meeting.",
+    "tid": 2,
+    "source": "calendar"
+  }
+]
