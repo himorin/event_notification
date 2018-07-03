@@ -29,6 +29,7 @@ CREATE TABLE schemes (
   id            int         UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
   user          text                 NOT NULL                            ,
   content       text                 NOT NULL                            ,
+  exec_cond     text                 NOT NULL                            ,
   minutes       int         UNSIGNED NOT NULL                            ,
   description   text                     NULL                            
 );
