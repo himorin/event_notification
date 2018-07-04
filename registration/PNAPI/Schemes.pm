@@ -1,6 +1,6 @@
-# Module for 'targets'
+# Module for 'schemes'
 
-package PNAPI::Targets;
+package PNAPI::Schemes;
 
 use strict;
 use lib '.';
@@ -21,7 +21,7 @@ sub new {
 sub get {
   my ($self, $name) = @_;
   if (! defined($name)) {return undef; }
-  my $sth = $dbh->prepare('SELECT * FROM targets WHERE id = ?');
+  my $sth = $dbh->prepare('SELECT * FROM schemes WHERE id = ?');
   $sth->execute($name);
   if ($sth->rows != 1) {return undef; }
   return $sth->fetchrow_hashref();
@@ -30,7 +30,7 @@ sub get {
 sub search {
   my ($self, $uname) = @_;
   if (! defined($uname)) {return undef; }
-  my $sth = $dbh->prepare('SELECT * FROM targets WHERE uname = ?');
+  my $sth = $dbh->prepare('SELECT * FROM schemes WHERE uname = ?');
   $sth->execute($uname);
   if ($sth->rows() < 1) {return undef; }
   return $sth->fetchall_hashref('id');
@@ -39,11 +39,11 @@ sub search {
 sub add {
   my ($self, $uname, $hash) = @_;
   my $add_id = undef;
-  if (defined($hash->{category}) && defined($hash->{pid})) {
-    my $sth = $dbh->prepare('INSERT INTO targets (uname, category, pid, param, description) VALUES (?, ?, ?, ?, ?)');
-    if ($sth->execute($uname, $hash->{category}, $hash->{pid}, $hash->{param}, 
+  if (defined($hash->{content}) && defined($hash->{minutes})) {
+    my $sth = $dbh->prepare('INSERT INTO schemes (uname, content, minutes, description) VALUES (?, ?, ?, ?)');
+    if ($sth->execute($uname, $hash->{content}, $hash->{minutes}, 
       $hash->{description}) == 0) {return undef; }
-    $add_id = $dbh->db_last_key('targets', 'id');
+    $add_id = $dbh->db_last_key('schemes', 'id');
     return $add_id;
   }
   return undef;
@@ -52,14 +52,9 @@ sub add {
 sub del {
   my ($self, $uname, $id) = @_;
   if ((! defined($id)) || ($id == 0)) {return undef; }
-  my $sth = $dbh->prepare('DELETE FROM targets WHERE ID = ? AND uname = ?');
+  my $sth = $dbh->prepare('DELETE FROM schemes WHERE ID = ? AND uname = ?');
   my $ret = $sth->execute($id, $uname);
-  if (defined($ret) && ($ret > 0)) {
-    # mark all notices with this id as invalid (3)
-    $sth = $dbh->prepare('UPDATE notices SET fired = 3 WHERE tid = ? AND fired = 0');
-    $sth->execute($id);
-    return $id;
-  }
+  if (defined($ret) && ($ret > 0)) {return $id; }
   return undef;
 }
 

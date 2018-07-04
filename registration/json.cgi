@@ -11,7 +11,7 @@ use PNAPI::CGI;
 
 use PNAPI::Notices;
 use PNAPI::Targets;
-#use PNAPI::Schemes;
+use PNAPI::Schemes;
 
 my $obj_cgi = new PNAPI::CGI();
 my $obj_config = new PNAPI::Config();
@@ -48,7 +48,8 @@ if ($input_cmds[0] eq 'notices') {
   }
 } elsif ($input_cmds[0] eq 'targets') {
   $obj_handler = new PNAPI::Targets();
-#} elsif ($input_cmds[0] eq 'schemes') {
+} elsif ($input_cmds[0] eq 'schemes') {
+  $obj_handler = new PNAPI::Schemes();
 } else {
   &_error_invarg("Target \"$input_cmds[0]\" not defined");
 }
