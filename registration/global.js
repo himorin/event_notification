@@ -67,6 +67,15 @@ function DeleteJson (target, id, show_handler) {
   });
 }
 
+function ShowTarget(json) {
+  document.querySelector('#return_t_id').innerText = json.id;
+  document.querySelector('#return_t_uname').innerText = json.uname;
+  document.querySelector('#return_t_category').innerText = json.category;
+  document.querySelector('#return_t_pid').innerText = json.pid;
+  document.querySelector('#return_t_param').innerText = json.param;
+  document.querySelector('#return_t_description').innerText = json.description;
+}
+
 function ShowNotice(json) {
   document.getElementById('return_n_id').innerText = json.id;
   document.getElementById('return_n_sid').innerText = json.sid;
@@ -132,6 +141,23 @@ window.addEventListener('load', function(event) {
   document.querySelector('#input_n_getall').addEventListener('click',
     function (e) {
       GetJsonForAll('notices', ShowNoticeList); }, false);
+
+  document.querySelector('#input_t_get').addEventListener('click',
+    function (e) {
+      GetJsonForId('targets', document.getElementById('input_t_id').value, 
+        ShowTarget); }, false);
+/*
+  document.querySelector('#input_n_post').addEventListener('click',
+    function (e) {
+      PostJson('notices', GetInputNotice, ShowNotice); }, false);
+  document.querySelector('#input_n_delete').addEventListener('click',
+    function (e) {
+      DeleteJson('notices', document.getElementById('input_n_id').value, 
+        LogDeletedNotice); }, false); 
+  document.querySelector('#input_n_getall').addEventListener('click',
+    function (e) {
+      GetJsonForAll('notices', ShowNoticeList); }, false);
+*/
 
   document.querySelector('#input_clear').addEventListener('click',
     function (e) {
