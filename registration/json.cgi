@@ -48,7 +48,7 @@ if ($input_cmds[0] eq 'notices') {
       $is_done = TRUE;
     } elsif ($#input_cmds == 0) {
       if (defined(my $uname = &_param('username', $cuser))) {
-        $outdata = $obj_handler->search(&_param('state', 'queued'), $uname);
+        $outdata = $obj_handler->search($uname, &_param('state', 'queued'));
         if (defined($outdata)) {$is_done = TRUE; }
         else {&_error_invarg("No item found"); }
       }

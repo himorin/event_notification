@@ -19,16 +19,16 @@ sub new {
 }
 
 sub get {
-  my ($self, $name) = @_;
-  if (! defined($name)) {return undef; }
+  my ($self, $id) = @_;
+  if (! defined($id)) {return undef; }
   my $sth = $dbh->prepare('SELECT * FROM notices WHERE id = ?');
-  $sth->execute($name);
+  $sth->execute($id);
   if ($sth->rows != 1) {return undef; }
   return $sth->fetchrow_hashref();
 }
 
 sub search {
-  my ($self, $state, $uname) = @_;
+  my ($self, $uname, $state) = @_;
   if (! defined($uname)) {return undef; }
   my $fired_id = STATE_QUEUED;
   my $fired_sth = 'AND fired = ?';
