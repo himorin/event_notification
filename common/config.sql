@@ -22,6 +22,7 @@ CREATE TABLE targets (
   uname         text                 NOT NULL                            ,
   category      text                 NOT NULL                            ,
   pid           text                 NOT NULL                            ,
+  param         text                     NULL                            ,
   description   text                     NULL                            
 );
 

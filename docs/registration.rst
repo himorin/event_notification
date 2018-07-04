@@ -120,6 +120,7 @@ This corresponds to database table `targets`.
   fired. 
 - pid (`Required`): Target ID at event provider, like telephone no or endpoint 
   URL.
+- param: Optional parameter required for some event providers.
 - description: Description of the notification target
 
 schemes
