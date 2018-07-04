@@ -39,8 +39,25 @@ sub search {
 sub add {
   my ($self, $uname, $hash) = @_;
   my $add_id = undef;
+  my $sth;
   if (defined($hash->{category}) && defined($hash->{pid})) {
-    my $sth = $dbh->prepare('INSERT INTO targets (uname, category, pid, param, description) VALUES (?, ?, ?, ?, ?)');
+    if ($hash->{category} eq 'webpush') {
+      # search and return existing id if the same
+      $sth = $dbh->prepare('SELECT * FROM targets WHERE category = "webpush" AND pid = ?');
+      $sth->execute($hash->{pid});
+      if ($sth->rows() > 0) {
+        my $val = $sth->fetchrow_hashref();
+        if ((! (defined($val->{param}) && ($val->{param} eq $hash->{param}))) ||
+            (! (defined($val->{description}) && ($val->{description} eq $hash->{description})))) {
+          # if wrong param or description, update it
+          $sth = $dbh->prepare('UPDATE targets SET param = ?, description = ? WHERE id = ?');
+          $sth->execute($hash->{param}, $hash->{description}, $val->{id});
+        }
+        return $val->{id};
+      }
+      # if not exist add new.
+    }
+$sth = $dbh->prepare('INSERT INTO targets (uname, category, pid, param, description) VALUES (?, ?, ?, ?, ?)');
     if ($sth->execute($uname, $hash->{category}, $hash->{pid}, $hash->{param}, 
       $hash->{description}) == 0) {return undef; }
     $add_id = $dbh->db_last_key('targets', 'id');

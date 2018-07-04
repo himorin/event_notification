@@ -172,6 +172,42 @@ function GetInputScheme () {
   return data;
 }
 
+function B64URL (data) {
+  return btoa(String.fromCharCode.apply(null, new Uint8Array(data)))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function ShowNotification(json) {
+  document.querySelector('#return_push').innerHTML = 
+    "Target ID: " + json.id + " as \"" + json.description + "\"";
+  document.querySelector('#input_push_enable').value = "WebPush Enabled, click to update description of this browser";
+}
+
+function EnableNotification() {
+  Notification.requestPermission(state => {
+    if (state === 'granted') {
+      navigator.serviceWorker.register('sw.js').then(() => {});
+      navigator.serviceWorker.ready.then(registration => {
+        return registration.pushManager.subscribe({
+          userVisibleOnly: true
+        }).then(subscription => {
+          var data = {};
+          data.category = 'webpush';
+          data.pid = subscription.endpoint;
+          data.param = B64URL(subscription.getKey('p256dh')) 
+            + ' / ' + B64URL(subscription.getKey('auth')) + ' / ';
+          if ('supportedContentEncodings' in PushManager) {
+            data.param += PushManager.supportedContentEncodings.includes(
+              'aes128gcm') ? 'aes128gcm' : 'aesgcm';
+          } else {data.param += 'aesgcm'}; 
+          data.description = document.querySelector('#input_push').value;
+          PostJson('targets', function (e) {return data}, ShowNotification);
+        });
+      });
+    }
+  });
+}
+
 window.addEventListener('load', function(event) {
   document.querySelector('#input_n_get').addEventListener('click',
     function (e) {
@@ -222,22 +258,12 @@ window.addEventListener('load', function(event) {
     function (e) {
       document.getElementById('return_error').innerHTML = ""; }, false);
 
-  navigator.serviceWorker.register('sw.js').then(() => {});
-  Notification.requestPermission(state => {
-    if (state === 'granted') {
-    }
-  });
-  navigator.serviceWorker.ready.then(registration => {
-    return registration.pushManager.subscribe({
-      userVisibleOnly: true
-    }).then(subscription => {
-      console.log(subscription.endpoint);
-      console.log(subscription.getKey('p256dh'));
-      console.log(subscription.getKey('auth'));
-      if ('supportedContentEncodings' in PushManager) {
-        console.log(PushManager.supportedContentEncodings.includes('aes128gcm') ? 'aes128gcm' : 'aesgcm');
-      }
-    });
-  });
+  if (Notification.permission == 'granted') {
+    // already granted, show notification configuration
+    EnableNotification();
+  }
+  document.querySelector('#input_push_enable').addEventListener('click',
+    function (e) {EnableNotification(); }, false);
+
 });
 
