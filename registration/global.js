@@ -68,24 +68,22 @@ function DeleteJson (target, id, show_handler) {
 }
 
 function ShowTarget(json) {
-  document.querySelector('#return_t_id').innerText = json.id;
-  document.querySelector('#return_t_uname').innerText = json.uname;
-  document.querySelector('#return_t_category').innerText = json.category;
-  document.querySelector('#return_t_pid').innerText = json.pid;
-  document.querySelector('#return_t_param').innerText = json.param;
-  document.querySelector('#return_t_description').innerText = json.description;
+  var list = [ 'id', 'uname', 'category', 'pid', 'param', 'description' ];
+  list.forEach(function(elem) {
+    document.querySelector('#return_t_' + elem).innerText = json[elem]; }, false);
+}
+
+function ShowScheme(json) {
+  var list = [ 'id', 'uname', 'content', 'minutes', 'description' ];
+  list.forEach(function(elem) {
+    document.querySelector('#return_s_' + elem).innerText = json[elem]; }, false);
 }
 
 function ShowNotice(json) {
-  document.getElementById('return_n_id').innerText = json.id;
-  document.getElementById('return_n_sid').innerText = json.sid;
-  document.getElementById('return_n_fired').innerText = json.fired;
-  document.getElementById('return_n_target').innerText = json.target;
-  document.getElementById('return_n_content').innerText = json.content;
-  document.getElementById('return_n_tid').innerText = json.tid;
-  document.getElementById('return_n_source').innerText = json.source;
-  document.getElementById('return_n_url').innerText = json.url;
-  document.getElementById('return_n_description').innerText = json.description;
+  var list = [ 'id', 'sid', 'fired', 'target', 'content', 'tid', 'source', 
+    'url', 'description' ];
+  list.forEach(function(elem) {
+    document.querySelector('#return_n_' + elem).innerText = json[elem]; }, false);
 }
 
 function ShowNoticeList(json) {
@@ -120,12 +118,31 @@ function ShowTargetList (json) {
       function (e) {ShowTarget(ret_hash.targets[id]); }, false); });
 }
 
+function ShowSchemeList (json) {
+  var out = '';
+  var elist = [];
+  Object.keys(json).forEach(function(elem) {
+    var cur = "<a id=\"scheme_list_" + this[elem].id + "\">" + this[elem].id + "</a>";
+    if (out != '') {out += ", "; }
+    out += cur;
+    elist.push(this[elem].id);
+  }, json);
+  document.querySelector('#ret_schemes').innerHTML = out;
+  elist.forEach(function(id) {
+    document.querySelector('#scheme_list_' + id).addEventListener('click', 
+      function (e) {ShowScheme(ret_hash.scheme[id]); }, false); });
+}
+
 function LogDeletedNotice(json) {
   ShowError('Notices ID ' + json.delete_id + ' deleted');
 }
 
 function LogDeletedTarget(json) {
   ShowError('Targets ID ' + json.delete_id + ' deleted');
+}
+
+function LogDeletedScheme(json) {
+  ShowError('Scheme ID ' + json.delete_id + ' deleted');
 }
 
 function GetInputNotice () {
@@ -142,6 +159,15 @@ function GetInputTarget () {
   var list = [ 'category', 'pid', 'param', 'description' ];
   list.forEach(function(id) {
     var cdata = document.querySelector('#input_t_' + id).value;
+    if (cdata != '') {data[id] = cdata; } }, false);
+  return data;
+}
+
+function GetInputScheme () {
+  var data = {};
+  var list = [ 'content', 'minutes', 'description' ];
+  list.forEach(function(id) {
+    var cdata = document.querySelector('#input_s_' + id).value;
     if (cdata != '') {data[id] = cdata; } }, false);
   return data;
 }
@@ -176,6 +202,21 @@ window.addEventListener('load', function(event) {
   document.querySelector('#input_t_getall').addEventListener('click',
     function (e) {
       GetJsonForAll('targets', ShowTargetList); }, false);
+
+  document.querySelector('#input_s_get').addEventListener('click',
+    function (e) {
+      GetJsonForId('schemes', document.getElementById('input_s_id').value, 
+        ShowScheme); }, false);
+  document.querySelector('#input_s_post').addEventListener('click',
+    function (e) {
+      PostJson('schemes', GetInputScheme, ShowScheme); }, false);
+  document.querySelector('#input_s_delete').addEventListener('click',
+    function (e) {
+      DeleteJson('schemes', document.getElementById('input_s_id').value, 
+        LogDeletedScheme); }, false); 
+  document.querySelector('#input_s_getall').addEventListener('click',
+    function (e) {
+      GetJsonForAll('schemes', ShowSchemeList); }, false);
 
   document.querySelector('#input_clear').addEventListener('click',
     function (e) {
