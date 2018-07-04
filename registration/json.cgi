@@ -50,6 +50,11 @@ if ($input_cmds[0] eq 'notices') {
   $obj_handler = new PNAPI::Targets();
 } elsif ($input_cmds[0] eq 'schemes') {
   $obj_handler = new PNAPI::Schemes();
+} elsif ($input_cmds[0] eq 'vapid') {
+  $outdata->{vapid_public} = $obj_config->get('vapid_public');
+  print $obj_cgi->header(200);
+  print to_json( $outdata );
+  exit;
 } else {
   &_error_invarg("Target \"$input_cmds[0]\" not defined");
 }

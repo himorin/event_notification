@@ -33,4 +33,19 @@ and each are wrapped as json object.
   - `api_fromnum`: Caller phone number
   - `token`: Account access token
 
+- `vapid`
+
+  - `private`: server private key for VAPID ECDH
+  - `public`: server public key for VAPID ECDH
+
+
+VAPID key generation
+------
+
+::
+
+  openssl ec -in private_key.pem -outform DER \
+    | tail -c +8 | head -c 32 | base64 -w 0 >> private_key.txt 
+  openssl ec -in private_key.pem -pubout -outform DER \
+    | tail -c 65 | base64 -w 0 >> public_key.txt
 

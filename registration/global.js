@@ -28,8 +28,8 @@ function GetJsonForAll (target, show_handler) {
     if (response.ok) {return response.json(); }
     throw Error("Returned response " + response.status);
   }).then(function(response) {
-    show_handler(response);
     ret_hash[target] = response;
+    show_handler(response);
   }).catch(function(error) {
     ShowError("Error occured: " + error.message);
   });
@@ -183,14 +183,25 @@ function ShowNotification(json) {
   document.querySelector('#input_push_enable').value = "WebPush Enabled, click to update description of this browser";
 }
 
+function GotVapidKey() {
+  if (Notification.permission == 'granted') {
+    // already granted, show notification configuration
+    EnableNotification();
+  }
+}
+
 function EnableNotification() {
   Notification.requestPermission(state => {
     if (state === 'granted') {
       navigator.serviceWorker.register('sw.js').then(() => {});
       navigator.serviceWorker.ready.then(registration => {
-        return registration.pushManager.subscribe({
-          userVisibleOnly: true
-        }).then(subscription => {
+        var pmopt = { userVisibleOnly: true };
+        if ('supportedContentEncodings' in PushManager) {
+          pmopt.applicationServerKey = 
+            Uint8Array.from(atob(ret_hash.vapid.vapid_public), 
+              c => c.charCodeAt(0));
+        }
+        return registration.pushManager.subscribe(pmopt).then(subscription => {
           var data = {};
           data.category = 'webpush';
           data.pid = subscription.endpoint;
@@ -258,10 +269,7 @@ window.addEventListener('load', function(event) {
     function (e) {
       document.getElementById('return_error').innerHTML = ""; }, false);
 
-  if (Notification.permission == 'granted') {
-    // already granted, show notification configuration
-    EnableNotification();
-  }
+  GetJsonForAll('vapid', GotVapidKey);
   document.querySelector('#input_push_enable').addEventListener('click',
     function (e) {EnableNotification(); }, false);
 

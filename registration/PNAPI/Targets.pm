@@ -47,6 +47,9 @@ sub add {
       $sth->execute($hash->{pid});
       if ($sth->rows() > 0) {
         my $val = $sth->fetchrow_hashref();
+        if ((! defined($hash->{description})) || ($hash->{description} eq '')) {
+          $hash->{description} = $val->{description};
+        }
         if ((! (defined($val->{param}) && ($val->{param} eq $hash->{param}))) ||
             (! (defined($val->{description}) && ($val->{description} eq $hash->{description})))) {
           # if wrong param or description, update it
