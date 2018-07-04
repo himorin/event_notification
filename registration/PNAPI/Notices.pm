@@ -48,11 +48,37 @@ sub search {
 sub add {
   my ($self, $uname, $hash) = @_;
   my $add_id = undef;
-  return $add_id;
+  if (defined($hash->{target}) && defined($hash->{content}) && 
+    defined($hash->{tid}) && defined($hash->{source})) {
+    # check specified tid is vaild and under uname
+    my $sth = $dbh->prepare('SELECT * FROM targets WHERE uname = ? AND id = ?');
+    if ((! $sth->execute($uname, $hash->{tid})) || ($sth->rows() < 1))
+      {return undef; }
+    my $q = 'INSERT INTO notices (target, content, tid, source';
+    my @arr = ($hash->{target}, $hash->{content}, $hash->{tid}, $hash->{source});
+    if (defined($hash->{url})) {$q .= ', url'; push(@arr, $hash->{url}); }
+    if (defined($hash->{description})) {$q .= ', description'; push(@arr, $hash->{description}); }
+    $q .= ') VALUES (' . ('?,' x $#arr) . '?)';
+    $sth = $dbh->prepare($q);
+    if ($sth->execute(@arr) == 0) {return undef; }
+    $add_id = $dbh->db_last_key('notices', 'id');
+    return $add_id;
+  }
+  return undef;
 }
 
 
 sub del {
+  my ($self, $uname, $id) = @_;
+  if ((! defined($id)) || ($id == 0)) {return undef; }
+  # check specified id is valid and under uname
+  my $sth = $dbh->prepare('SELECT notices.id FROM notices INNER JOIN targets ON notices.tid = targets.id WHERE notices.id = ? AND targets.uname = ? AND notices.fired = 0');
+  if ((! $sth->execute($id, $uname)) || ($sth->rows() < 1)) 
+    {return undef; }
+  $sth = $dbh->prepare('UPDATE notices SET fired = 2 WHERE id = ? AND fired = 0');
+  my $ret = $sth->execute($id);
+  if (defined($ret) && ($ret > 0)) {return $id; }
+  return undef;
 }
 
 

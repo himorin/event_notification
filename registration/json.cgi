@@ -23,9 +23,9 @@ my $input_data = $obj_cgi->param('POSTDATA');
 if (substr($input_cmd, 0, 1) eq '/') {$input_cmd = substr($input_cmd, 1); }
 my @input_cmds = split(/\//, $input_cmd);
 if ($#input_cmds < 0) {&_error_invarg('Target missing'); }
-my %input_hash;
+my $input_hash;
 if ($input_method eq 'POST') {
-  %input_hash = to_json($input_data);
+  $input_hash = from_json($input_data);
 }
 
 # start processing
@@ -54,13 +54,15 @@ if ($input_cmds[0] eq 'notices') {
       }
     }
   } elsif ($input_method eq 'POST') {
-    $is_id = $obj_handler->add($cuser, \%input_hash);
+    $is_id = $obj_handler->add($cuser, $input_hash);
     if (defined($is_id)) {&_return_redirect($input_cmds[0], $is_id); }
   } elsif ($input_method eq 'DELETE') {
-    $is_id = $obj_handler->del($cuser, \%input_hash);
-    if (defined($is_id)) {
-      $is_done = TRUE;
-      $outdata->{delete_id} = $is_id;
+    if ($#input_cmds == 1) {
+      $is_id = $obj_handler->del($cuser, $input_cmds[1]);
+      if (defined($is_id)) {
+        $is_done = TRUE;
+        $outdata->{delete_id} = $is_id;
+      }
     }
   }
 } elsif ($input_cmds[0] eq 'targets') {
@@ -70,9 +72,6 @@ if ($input_cmds[0] eq 'notices') {
 }
 if (! $is_done) {
   &_error_invarg("Invalid arguments were supplied for target \"$input_cmds[0]\".");
-}
-if (! defined($outdata)) {
-  &_error_invarg("Target ID not found \"$input_cmds[1]\"");
 }
 
 # start reply
@@ -91,7 +90,11 @@ sub _error_invarg {
 
 sub _return_redirect {
   my ($target, $id) = @_;
-  print $obj_cgi->redirect("$0/$target/$id");
+  print $obj_cgi->redirect(
+    $obj_config->get('api_base') . "/$target/$id"
+#    -uri => $obj_config->get('api_base') . "/$target/$id",
+#    -status => '302 Found'
+  );
   exit;
 }
 
@@ -101,21 +104,6 @@ sub _param {
 }
 
 __END__
-/notices
-------
-
-List and manipulate notification events.
-One notification event represents one notification to be fired (not for all 
-notification targets of user), which has configuration of event and ID of 
-notification target to be used. 
-
-- `GET /notices?state=queued&username=:username`_: Get list of registered 
-  notification events
-- `GET /notices/:id`_: Get specified registered notification event
-- `POST /notices`_: Register new notification event for current logged in 
-  user.
-- `DELETE /notices/:id`_: Delete specified registered notification event
-
 /targets
 ------
 

@@ -54,6 +54,11 @@ sub param {
     return $self->SUPER::param(@args);
 }
 
+sub redirect {
+    my $self = pop(@_);
+    return $self->SUPER::redirect(@_);
+}
+
 sub header {
     my ($self, $status, @args) = @_;
     if (! defined($status)) {$status = 200; }
