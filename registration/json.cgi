@@ -40,37 +40,45 @@ my $is_done = FALSE;
 my $is_id = 0;
 my $cuser = $ENV{'REMOTE_USER'};
 my $obj_handler;
+my $cmd_opt = {};
 if ($input_cmds[0] eq 'notices') {
   $obj_handler = new PNAPI::Notices();
-  if ($input_method eq 'GET') {
-    if ($#input_cmds == 1) {
-      $outdata = $obj_handler->get($input_cmds[1]);
-      $is_done = TRUE;
-    } elsif ($#input_cmds == 0) {
-      if (defined(my $uname = &_param('username', $cuser))) {
-        $outdata = $obj_handler->search($uname, &_param('state', 'queued'));
-        if (defined($outdata)) {$is_done = TRUE; }
-        else {&_error_invarg("No item found"); }
-      }
-    }
-  } elsif ($input_method eq 'POST') {
-    $is_id = $obj_handler->add($cuser, $input_hash);
-    if (defined($is_id)) {&_return_redirect($input_cmds[0], $is_id); }
-  } elsif ($input_method eq 'DELETE') {
-    if ($#input_cmds == 1) {
-      $is_id = $obj_handler->del($cuser, $input_cmds[1]);
-      if (defined($is_id)) {
-        $is_done = TRUE;
-        $outdata->{delete_id} = $is_id;
-      }
-    }
+  if (($input_method eq 'GET') && ($#input_cmds == 0)) {
+    $cmd_opt->{state} = &_param('state', 'queued');
   }
 } elsif ($input_cmds[0] eq 'targets') {
   $obj_handler = new PNAPI::Targets();
-} elsif ($input_cmds[0] eq 'schemes') {
+#} elsif ($input_cmds[0] eq 'schemes') {
 } else {
   &_error_invarg("Target \"$input_cmds[0]\" not defined");
 }
+
+if ($input_method eq 'GET') {
+  if ($#input_cmds == 1) {
+    $outdata = $obj_handler->get($input_cmds[1]);
+    $is_done = TRUE;
+} elsif ($#input_cmds == 0) {
+    if (defined(my $uname = &_param('username', $cuser))) {
+      $outdata = $obj_handler->search($uname, $cmd_opt);
+      if (defined($outdata)) {$is_done = TRUE; }
+      else {&_error_invarg("No item found"); }
+    }
+  }
+} elsif ($input_method eq 'POST') {
+  $is_id = $obj_handler->add($cuser, $input_hash);
+  if (defined($is_id)) {&_return_redirect($input_cmds[0], $is_id); }
+} elsif ($input_method eq 'DELETE') {
+  if ($#input_cmds == 1) {
+    $is_id = $obj_handler->del($cuser, $input_cmds[1]);
+    if (defined($is_id)) {
+      $is_done = TRUE;
+      $outdata->{delete_id} = $is_id;
+    }
+  }
+}
+
+
+
 if (! $is_done) {
   &_error_invarg("Invalid arguments were supplied for target \"$input_cmds[0]\".");
 }

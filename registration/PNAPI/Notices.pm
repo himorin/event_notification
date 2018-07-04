@@ -28,14 +28,14 @@ sub get {
 }
 
 sub search {
-  my ($self, $uname, $state) = @_;
+  my ($self, $uname, $hash) = @_;
   if (! defined($uname)) {return undef; }
   my $fired_id = STATE_QUEUED;
   my $fired_sth = 'AND fired = ?';
-  if (defined($state)) {
-    if ($state eq 'fired') {$fired_id = STATE_FIRED; }
-    elsif ($state eq 'deleted') {$fired_id = STATE_DELETED; }
-    elsif ($state eq 'queued') {}
+  if (defined($hash->{state})) {
+    if ($hash->{state} eq 'fired') {$fired_id = STATE_FIRED; }
+    elsif ($hash->{state} eq 'deleted') {$fired_id = STATE_DELETED; }
+    elsif ($hash->{state} eq 'queued') {}
     else {$fired_sth = ''; }
   } else {$fired_sth = ''; }
   my $q = "SELECT notices.* FROM notices INNER JOIN targets ON notices.tid = targets.id WHERE targets.uname = ? $fired_sth";

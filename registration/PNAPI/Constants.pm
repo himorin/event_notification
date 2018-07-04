@@ -21,6 +21,7 @@ use Cwd;
   STATE_QUEUED
   STATE_FIRED
   STATE_DELETED
+  STATE_INVALID
 
   HTTP_STATUS
 
@@ -36,6 +37,7 @@ use constant FALSE        => 0;
 use constant STATE_QUEUED   => 0;
 use constant STATE_FIRED    => 1;
 use constant STATE_DELETED  => 2;
+use constant STATE_INVALID  => 3;
 
 use constant PNAPI_VERSION => "0.1";
 use constant PNAPI_CONFIG => "siteconfig.json";
