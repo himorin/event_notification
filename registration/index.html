@@ -9,31 +9,41 @@
 <body>
 <h3>Test version now</h3>
 <form>
-<ul>
-  <li>ID: <span id="return_id"></span> 
-        | <input type="text" name="id" id="input_id"></li>
-  <li>SID: <span id="return_sid"></span> 
-        | <input type="text" name="sid" id="input_sid"></li>
-  <li>fired: <span id="return_fired"></span> 
-        | <input type="text" name="fired" id="input_fired"></li>
-  <li>target: <span id="return_target"></span> 
-        | <input type="text" name="target" id="input_target"></li>
-  <li>content: <span id="return_content"></span> 
-        | <input type="text" name="content" id="input_content"></li>
-  <li>tid: <span id="return_tid"></span> 
-        | <input type="text" name="tid" id="input_tid"></li>
-  <li>source: <span id="return_source"></span> 
-        | <input type="text" name="source" id="input_source"></li>
-  <li>url: <span id="return_url"></span> 
-        | <input type="text" name="url" id="input_url"></li>
-  <li>description: <span id="return_description"></span> 
-        | <input type="text" name="description" id="input_description"></li>
-</ul>
-<div style="border: 1px solid black"><span id="return_error">Exec error/log to here</span></div>
-<input type="button" id="input_get" value="Get">
-<input type="button" id="input_post" value="Post">
-<input type="button" id="input_delete" value="Delete">
+<ul><li>Notices<ul>
+  <li>ID: <span id="return_n_id"></span> 
+        | <input type="text" name="n_id" id="input_n_id"></li>
+  <li>SID: <span id="return_n_sid"></span> 
+        | <input type="text" name="n_sid" id="input_n_sid"></li>
+  <li>fired: <span id="return_n_fired"></span> 
+        | <input type="text" name="n_fired" id="input_n_fired"></li>
+  <li>target: <span id="return_n_target"></span> 
+        | <input type="text" name="n_target" id="input_n_target"></li>
+  <li>content: <span id="return_n_content"></span> 
+        | <input type="text" name="n_content" id="input_n_content"></li>
+  <li>tid: <span id="return_n_tid"></span> 
+        | <input type="text" name="n_tid" id="input_n_tid"></li>
+  <li>source: <span id="return_n_source"></span> 
+        | <input type="text" name="n_source" id="input_n_source"></li>
+  <li>url: <span id="return_n_url"></span> 
+        | <input type="text" name="n_url" id="input_n_url"></li>
+  <li>description: <span id="return_n_description"></span> 
+        | <input type="text" name="n_description" id="input_n_description"></li>
+  <li>LIST: <span id="ret_notices"></span></li>
+</ul></li><li>Targets<ul>
+</ul></li><li>Schemes<ul>
+</ul></li></ul>
+<div>
+<span>Notice:
+<input type="button" id="input_n_get" value="Get">
+<input type="button" id="input_n_getall" value="Get All">
+<input type="button" id="input_n_post" value="Post">
+<input type="button" id="input_n_delete" value="Delete">
+</span><br /><span>Targets:
+</span><br /><span>Schemes:
+</span><br />
 <input type="button" id="input_clear" value="Clear Log">
+</div>
 </form>
+<div style="border: 1px solid black"><span id="return_error">Exec error/log to here</span></div>
 </body>
 </html>
