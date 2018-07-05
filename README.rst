@@ -109,4 +109,7 @@ Dependencies
 - mysql (for overall database backend)
 - pywebpush (for daemon script)
 - py-vapid (for VAPID configuration)
+- python oauth2client
+- python google-api-python-client
+- perl JSON
 

@@ -1,12 +1,9 @@
 #! /usr/bin/env python3
 
 import sys
-from datetime import datetime
 
 import mysql.connector
 from mysql.connector import errorcode
-
-DEF_SEC_OVERHEAD = 10
 
 class EventDB(object):
 
@@ -40,14 +37,10 @@ class EventDB(object):
         if self.cnx != None:
             self.cnx.close()
 
-    def ListNotices(self, minutes):
-        if int(minutes) < 1:
-            return None
-        ssec = int(minutes) * 60
-        t_now = datetime.utcnow().timestamp() - DEF_SEC_OVERHEAD
+    def ListSchemes(self, summary):
         cursor = self._get_new_cursor()
-        cursor.execute("SELECT * FROM notices WHERE target > FROM_UNIXTIME(%s) AND target < FROM_UNIXTIME(%s) AND fired = 0",
-            [t_now, t_now + ssec])
+        cursor.execute("SELECT * FROM schemes WHERE %s LIKE exec_cond",
+            [summary])
         row_ids = cursor.column_names
         ret = {}
         for row_raw in cursor:
@@ -56,39 +49,40 @@ class EventDB(object):
         cursor.close()
         return ret
 
-    def UpdateNotice(self, id, sid, fired):
+    def ListNoticesBySource(self, source):
         cursor = self._get_new_cursor()
-        cursor.execute("UPDATE notices SET sid = %s, fired = %s WHERE id = %s", 
-            [sid, fired, id])
+        cursor.execute("SELECT * FROM schemes WHERE source = %s AND fired = 0",
+            [source])
+        row_ids = cursor.column_names
+        ret = {}
+        for row_raw in cursor:
+            row = dict(zip(row_ids, row_raw))
+            ret[row['id']] = row
+        cursor.close()
+        return ret
+
+    def CancelNotice(self, id):
+        cursor = self._get_new_cursor()
+        cursor.execute("UPDATE notices SET fired = 2 WHERE id = %s", [id])
         self.cnx.commit()
         if cursor.rowcount != 1:
-            print("Not updated")
+            print("Delete failed {}".format(id))
             cursor.close()
             return None
         cursor.close()
         return id
 
-    def UpdateNoticeSuccess(self, id, sid):
-        return self.UpdateNotice(id, sid, 1)
-
-    def UpdateNoticeError(self, id, error):
-        return self.UpdateNotice(id, error, 4)
-
-    def UpdateNoticePushed(self, id, sid):
-        return self.UpdateNotice(id, sid, 5)
-
-    def GetTargetInfo(self, id):
-        if id in self.db_targets:
-            return self.db_targets[id]
+    def AddNotice(self, val):
         cursor = self._get_new_cursor()
-        cursor.execute("SELECT * FROM targets WHERE id = %s", [id])
-        row_ids = cursor.column_names
-        row_raw = cursor.fetchone()
-        if row_raw == None:
+        cursor.execute("INSERT INTO notices (target, content, tid, source, url, description) VALUES (FROM_UNIXTIME(%s), %s, %s, %s, %s, %s)",
+            [val['target'], val['content'], val['tid'], val['source'], 
+            val['url'], val['description']])
+        self.cnx.commit()
+        if cursor.rowcount != 1:
+            print("Add new notice failed")
             cursor.close()
             return None
-        row = dict(zip(row_ids, row_raw))
-        self.db_targets[id] = row
+        lid = cursor.lastrowid
         cursor.close()
-        return self.db_targets[id]
+        return lid
 

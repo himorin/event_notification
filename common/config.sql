@@ -32,6 +32,7 @@ CREATE TABLE schemes (
   content       text                 NOT NULL                            ,
   exec_cond     text                 NOT NULL                            ,
   minutes       int         UNSIGNED NOT NULL                            ,
+  tid           int         UNSIGNED NOT NULL                            ,
   description   text                     NULL                            
 );
 
