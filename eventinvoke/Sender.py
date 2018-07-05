@@ -31,11 +31,10 @@ class Sender:
         call = self.twilio_client.calls.create(to = target['pid'], 
             from_ = conf['twilio_num'], url = conf['twilio_url'])
         ret['sid'] = call.sid
-        ret['error'] = call.error_code
         ret['status'] = call.status
         return ret
 
-    def GetStatus(self, sid, conf):
+    def GetSMSStatus(self, sid, conf):
         self.InitTwilio(conf)
         ret = {}
         mess = self.twilio_client.messages(sid).fetch()

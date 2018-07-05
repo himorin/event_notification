@@ -53,8 +53,8 @@ if __name__ == "__main__":
     time.sleep(10)
     for id in notices_ret.keys():
         target = dbh.GetTargetInfo(notices_ret[id]['tid'])
-        if target['category'] == 'sms' or target['category'] == 'phone':
-            ret = send.GetStatus(notices_ret[id]['sid'], site_config)
+        if target['category'] == 'sms':
+            ret = send.GetSMSStatus(notices_ret[id]['sid'], site_config)
             if 'error' in ret and ret['error'] != None:
                 dbh.UpdateNoticeError(id,
                     "{} {}".format(ret['error'], ret['status']))
