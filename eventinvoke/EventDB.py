@@ -44,10 +44,9 @@ class EventDB(object):
         if int(minutes) < 1:
             return None
         ssec = int(minutes) * 60
-        t_now = datetime.utcnow().timestamp() - DEF_SEC_OVERHEAD
         cursor = self._get_new_cursor()
-        cursor.execute("SELECT * FROM notices WHERE target > FROM_UNIXTIME(%s) AND target < FROM_UNIXTIME(%s) AND fired = 0",
-            [t_now, t_now + ssec])
+        cursor.execute("SELECT * FROM notices WHERE target > SUBTIME(UTC_TIMESTAMP(), SEC_TO_TIME(%s)) AND target < ADDTIME(UTC_TIMESTAMP(), SEC_TO_TIME(%s))", 
+            [DEF_SEC_OVERHEAD, (ssec - DEF_SEC_OVERHEAD)])
         row_ids = cursor.column_names
         ret = {}
         for row_raw in cursor:
