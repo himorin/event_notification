@@ -74,7 +74,8 @@ function ShowTarget(json) {
 }
 
 function ShowScheme(json) {
-  var list = [ 'id', 'uname', 'content', 'minutes', 'description' ];
+  var list = [ 'id', 'uname', 'content', 'exec_cond', 'minutes', 
+    'tid', 'description' ];
   list.forEach(function(elem) {
     document.querySelector('#return_s_' + elem).innerText = json[elem]; }, false);
 }
@@ -130,7 +131,7 @@ function ShowSchemeList (json) {
   document.querySelector('#ret_schemes').innerHTML = out;
   elist.forEach(function(id) {
     document.querySelector('#scheme_list_' + id).addEventListener('click', 
-      function (e) {ShowScheme(ret_hash.scheme[id]); }, false); });
+      function (e) {ShowScheme(ret_hash.schemes[id]); }, false); });
 }
 
 function LogDeletedNotice(json) {
@@ -165,7 +166,7 @@ function GetInputTarget () {
 
 function GetInputScheme () {
   var data = {};
-  var list = [ 'content', 'minutes', 'description' ];
+  var list = [ 'content', 'exec_cond', 'minutes', 'tid', 'description' ];
   list.forEach(function(id) {
     var cdata = document.querySelector('#input_s_' + id).value;
     if (cdata != '') {data[id] = cdata; } }, false);

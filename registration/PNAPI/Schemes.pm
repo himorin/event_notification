@@ -39,10 +39,12 @@ sub search {
 sub add {
   my ($self, $uname, $hash) = @_;
   my $add_id = undef;
-  if (defined($hash->{content}) && defined($hash->{minutes})) {
-    my $sth = $dbh->prepare('INSERT INTO schemes (uname, content, minutes, description) VALUES (?, ?, ?, ?)');
-    if ($sth->execute($uname, $hash->{content}, $hash->{minutes}, 
-      $hash->{description}) == 0) {return undef; }
+  if (defined($hash->{content}) && defined($hash->{minutes}) && 
+    defined($hash->{tid}) && defined($hash->{exec_cond})) {
+    my $sth = $dbh->prepare('INSERT INTO schemes (uname, content, exec_cond, minutes, tid, description) VALUES (?, ?, ?, ?, ?, ?)');
+    if ($sth->execute($uname, $hash->{content}, '%' . $hash->{exec_cond} . '%',
+      $hash->{minutes}, $hash->{tid}, $hash->{description}) == 0)
+      {return undef; }
     $add_id = $dbh->db_last_key('schemes', 'id');
     return $add_id;
   }
