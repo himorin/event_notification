@@ -24,7 +24,9 @@ sub get {
   my $sth = $dbh->prepare('SELECT * FROM targets WHERE id = ?');
   $sth->execute($name);
   if ($sth->rows != 1) {return undef; }
-  return $sth->fetchrow_hashref();
+  my $ret = $sth->fetchrow_hashref();
+  delete $ret->{'param'};
+  return $ret;
 }
 
 sub search {
@@ -33,7 +35,11 @@ sub search {
   my $sth = $dbh->prepare('SELECT * FROM targets WHERE uname = ?');
   $sth->execute($uname);
   if ($sth->rows() < 1) {return undef; }
-  return $sth->fetchall_hashref('id');
+  my $ret = $sth->fetchall_hashref('id');
+  foreach my $id (keys(%$ret)) {
+    delete $ret->{$id}->{'param'};
+  }
+  return $ret;
 }
 
 sub add {
