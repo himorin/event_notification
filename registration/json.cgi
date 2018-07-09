@@ -36,8 +36,6 @@ $outdata->{cmd} = $input_cmd;
 $outdata->{data} = $input_data;
 
 # just do nothing if argument not match with predefined
-my $is_done = FALSE;
-my $is_id = 0;
 my $cuser = $ENV{'REMOTE_USER'};
 my $obj_handler;
 my $cmd_opt = {};
@@ -59,10 +57,14 @@ if ($input_cmds[0] eq 'notices') {
   &_error_invarg("Target \"$input_cmds[0]\" not defined");
 }
 
+my $is_done = FALSE;
+my $ret_err = undef;
+my $is_id = 0;
 if ($input_method eq 'GET') {
   if ($#input_cmds == 1) {
     $outdata = $obj_handler->get($input_cmds[1]);
-    $is_done = TRUE;
+    if (defined($outdata)) {$is_done = TRUE; }
+    else {$ret_err = "ID not found"; }
 } elsif ($#input_cmds == 0) {
     if (defined(my $uname = &_param('username', $cuser))) {
       $outdata = $obj_handler->search($uname, $cmd_opt);
@@ -86,6 +88,7 @@ if ($input_method eq 'GET') {
 
 
 if (! $is_done) {
+  if (defined($ret_err)) {&_error_invarg($ret_err); }
   &_error_invarg("Invalid arguments were supplied for target \"$input_cmds[0]\".");
 }
 
