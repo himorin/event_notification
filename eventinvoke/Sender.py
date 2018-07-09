@@ -2,6 +2,9 @@
 
 from twilio.rest import Client
 from pywebpush import webpush, WebPushException
+import smtplib
+import email.utils
+from email.mime.text import MIMEText
 import json
 
 class Sender:
@@ -13,6 +16,26 @@ class Sender:
             return self.twilio_client
         self.twilio_client = Client(conf['twilio_account'], 
             conf['twilio_token'])
+
+    def SendEmail(self, notice, target, conf):
+        ret = {}
+        lines = notice['content'].split("\n")
+        subj = "[{}] {}".format(conf['email_sbjhead'], lines.pop(0))
+        msg = MIMEText("\n".join(lines))
+        msg['Subject'] = subj
+        msg['To'] = target['pid']
+        msg['From'] = conf['email_from']
+        server = smtplib.SMTP(conf['email_smarthost'])
+        try:
+            server.sendmail(msg['From'], [msg['to']], msg.as_string())
+            ret['sid'] = 'out'
+            ret['status'] = 'delivered'
+        except Exception as e:
+            ret['error'] = e
+            ret['status'] = 'error'
+        finally:
+            server.quit()
+        return ret
 
     def SendSMS(self, notice, target, conf):
         ret = {}

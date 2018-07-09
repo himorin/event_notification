@@ -39,6 +39,8 @@ if __name__ == "__main__":
             ret = send.SendSMS(notices[id], target, site_config)
         elif target['category'] == 'phone':
             ret = send.SendPhone(notices[id], target, site_config)
+        elif target['category'] == 'email':
+            ret = send.SendEmail(notices[id], target, site_config)
         else:
             continue
         ret['tid'] = notices[id]['tid']
