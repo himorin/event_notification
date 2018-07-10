@@ -1,9 +1,24 @@
 var api_head = "json.cgi/";
 
 var ret_hash = {};
+var cur_n_target = "queued";
+var tid_select = ['input_n_tid', 'input_s_tid'];
+
+var n_fired_icon = {
+  0: { 'title': 'notification queued', 'icon': 'schedule' },
+  1: { 'title': 'notification fired', 'icon': 'done' },
+  2: { 'title': 'notification deleted', 'icon': 'remove_circle_outline' },
+  3: { 'title': 'notification marked as invalid', 'icon': 'pause_circle_outline' },
+  4: { 'title': 'notification error after execution', 'icon': 'report_problem' },
+  5: { 'title': 'notification in execution', 'icon': 'call' },
+};
 
 function ShowError (str) {
-  document.getElementById('return_error').innerHTML += "<br>" + str;
+  console.log(str);
+}
+function ValToStr (val) {
+  if (val === null) {return "(not supplied)"; }
+  return val;
 }
 
 function GetJsonForId (target, id, show_handler) {
@@ -20,8 +35,10 @@ function GetJsonForId (target, id, show_handler) {
   });
 }
 
-function GetJsonForAll (target, show_handler) {
-  fetch(api_head + target, {
+function GetJsonForAll (target, show_handler, opt) {
+  var url = api_head + target;
+  if ((target == 'notices') && (opt != null)) {url += '?state=' + opt; }
+  fetch(url, {
     cache: 'no-cache', credentials: 'same-origin',
     method: 'GET', redirect: 'follow' })
   .then(function(response) {
@@ -67,79 +84,105 @@ function DeleteJson (target, id, show_handler) {
   });
 }
 
-function ShowTarget(json) {
-  var list = [ 'id', 'uname', 'category', 'pid', 'param', 'description' ];
-  list.forEach(function(elem) {
-    document.querySelector('#return_t_' + elem).innerText = json[elem]; }, false);
-}
-
-function ShowScheme(json) {
-  var list = [ 'id', 'uname', 'content', 'exec_cond', 'minutes', 
-    'tid', 'description' ];
-  list.forEach(function(elem) {
-    document.querySelector('#return_s_' + elem).innerText = json[elem]; }, false);
-}
-
 function ShowNotice(json) {
-  var list = [ 'id', 'sid', 'fired', 'target', 'content', 'tid', 'source', 
-    'url', 'description' ];
-  list.forEach(function(elem) {
-    document.querySelector('#return_n_' + elem).innerText = json[elem]; }, false);
+  document.querySelector("#n_list").innerHTML += GetNoticeLine(json);
 }
-
 function ShowNoticeList(json) {
-  var out = '';
-  var elist = [];
+  document.querySelector("#n_list").innerHTML = "";
   Object.keys(json).forEach(function(elem) {
-    var cur = "<a class=\"fired_" + this[elem].fired + "\" ";
-    cur += "id=\"notice_list_" + this[elem].id + "\">" + this[elem].id + "</a>";
-    if (out != '') {out += ", "; }
-    out += cur;
-    elist.push(this[elem].id);
+    document.querySelector("#n_list").innerHTML += GetNoticeLine(json[elem]);
   }, json);
-  document.querySelector('#ret_notices').innerHTML = out;
-  elist.forEach(function(id) {
-    document.querySelector('#notice_list_' + id).addEventListener('click', 
-      function (e) {ShowNotice(ret_hash.notices[id]); }, false); });
+}
+function GetNoticeLine (elem) {
+  var cur = "<tr id=\"n_tr_" + elem.id + "\" class=\"fired_" + elem.fired + "\">";
+  cur += "<td>";
+  cur += "<input type=\"checkbox\" name=\"n_select\" value=\"" + elem.id + "\" class=\"n_select\">";
+  cur += "<span class=\"mi_inline\" title=\"" + n_fired_icon[elem.fired].title + "\"><i class=\"material-icons\">" + n_fired_icon[elem.fired].icon + "</i></span>";
+  cur += "</td>";
+  cur += "<td>" + elem.target + "</td>";
+  cur += "<td>" + GetTargetShort(elem.tid) + "</td>";
+  cur += "<td>" + elem.content + "</td>";
+  cur += "<td>" + ValToStr(elem.description) + "</td>";
+  cur += "</tr>";
+  return cur;
 }
 
+function ShowTarget(json) {
+  document.querySelector('#t_new').style.display = 'none';
+  document.querySelector("#t_list").innerHTML += GetTargetLine(json);
+}
 function ShowTargetList (json) {
-  var out = '';
-  var elist = [];
+  document.querySelector("#t_list").innerHTML = "";
   Object.keys(json).forEach(function(elem) {
-    var cur = "<a class=\"tcat_" + this[elem].category + "\" ";
-    cur += "id=\"target_list_" + this[elem].id + "\">" + this[elem].id + "</a>";
-    if (out != '') {out += ", "; }
-    out += cur;
-    elist.push(this[elem].id);
+    document.querySelector("#t_list").innerHTML += GetTargetLine(json[elem]);
   }, json);
-  document.querySelector('#ret_targets').innerHTML = out;
-  elist.forEach(function(id) {
-    document.querySelector('#target_list_' + id).addEventListener('click', 
-      function (e) {ShowTarget(ret_hash.targets[id]); }, false); });
+  UpdateTidSelectAll();
 }
 
+function GetTargetLine (elem) {
+  var cur = "<tr id=\"t_tr_" + elem.id + "\">";
+  cur += "<td><input type=\"checkbox\" name=\"t_select\" value=\"" + elem.id + "\" class=\"t_select\"></td>";
+  cur += "<td>" + elem.category + "</td>";
+  cur += "<td>" + ValToStr(GetTargetLabel(elem)) + "</td>";
+  cur += "<td>" + ValToStr(GetTargetDescription(elem)) + "</td>";
+  cur += "</tr>";
+  return cur;
+}
+function GetTargetLabel (elem) {
+  if (elem.category == "webpush") {return elem.description; }
+  else if (["sms", "phone", "email"].includes(elem.category)) {return elem.pid; }
+  return "";
+}
+function GetTargetDescription (elem) {
+  if (elem.category == "webpush") {return "(push notification)"; }
+  else if (["sms", "phone", "email"].includes(elem.category)) {return elem.description; }
+  return "";
+}
+function GetTargetShort (id) {
+  if (ret_hash['targets'] == null) {return "(loading...)"; }
+  var elem = ret_hash['targets'][id];
+  if (elem == null) {return ""; }
+  return elem.category + ": " + GetTargetLabel(elem);
+}
+function UpdateTidSelectAll () {
+  tid_select.forEach(function (item) {UpdateTidSelect(item); }, false);
+}
+function UpdateTidSelect (target) {
+  var cn;
+  var tcn = document.querySelector('#' + target);
+  while ((cn = tcn.firstChild) != null) {tcn.removeChild(cn); }
+  Object.keys(ret_hash['targets']).forEach(function (id) {
+    var opt = document.createElement('option');
+    opt.setAttribute('value', id);
+    opt.innerHTML = GetTargetShort(id);
+    tcn.appendChild(opt);
+  }, false);
+}
+
+function ShowScheme (json) {
+  document.querySelector('#s_new').style.display = 'none';
+  document.querySelector("#s_list").innerHTML += GetSchemeLine(json);
+}
 function ShowSchemeList (json) {
-  var out = '';
-  var elist = [];
+  document.querySelector("#s_list").innerHTML = "";
   Object.keys(json).forEach(function(elem) {
-    var cur = "<a id=\"scheme_list_" + this[elem].id + "\">" + this[elem].id + "</a>";
-    if (out != '') {out += ", "; }
-    out += cur;
-    elist.push(this[elem].id);
-  }, json);
-  document.querySelector('#ret_schemes').innerHTML = out;
-  elist.forEach(function(id) {
-    document.querySelector('#scheme_list_' + id).addEventListener('click', 
-      function (e) {ShowScheme(ret_hash.schemes[id]); }, false); });
+    document.querySelector("#s_list").innerHTML += GetSchemeLine(json[elem]);
+  }, false);
+}
+function GetSchemeLine (elem) {
+  var cur = "<tr id=\"s_tr_" + elem.id + "\">";
+  cur += "<td><input type=\"checkbox\" name=\"s_select\" value=\"" + elem.id + "\" class=\"s_select\"></td>";
+  cur += "<td>" + elem.exec_cond + "</td>";
+  cur += "<td>" + GetTargetShort(elem.tid) + "</td>";
+  cur += "<td>" + elem.minutes + "</td>";
+  cur += "<td>" + elem.content + "</td>";
+  cur += "<td>" + ValToStr(elem.description) + "</td>";
+  cur += "</tr>";
+  return cur;
 }
 
 function LogDeletedNotice(json) {
   ShowError('Notices ID ' + json.delete_id + ' deleted');
-}
-
-function LogDeletedTarget(json) {
-  ShowError('Targets ID ' + json.delete_id + ' deleted');
 }
 
 function LogDeletedScheme(json) {
@@ -148,16 +191,18 @@ function LogDeletedScheme(json) {
 
 function GetInputNotice () {
   var data = {};
-  var list = [ 'target', 'content', 'tid', 'source', 'url', 'description' ];
+  var list = [ 'content', 'tid', 'source', 'url', 'description' ];
   list.forEach(function(id) {
     var cdata = document.querySelector('#input_n_' + id).value;
     if (cdata != '') {data[id] = cdata; } }, false);
+  data['target'] = document.querySelector('#input_n_target_date').value + 'T' +
+    document.querySelector('#input_n_target_time').value + ':00.000Z';
   return data;
 }
 
 function GetInputTarget () {
   var data = {};
-  var list = [ 'category', 'pid', 'param', 'description' ];
+  var list = [ 'category', 'pid', 'description' ];
   list.forEach(function(id) {
     var cdata = document.querySelector('#input_t_' + id).value;
     if (cdata != '') {data[id] = cdata; } }, false);
@@ -179,9 +224,10 @@ function B64URL (data) {
 }
 
 function ShowNotification(json) {
-  document.querySelector('#return_push').innerHTML = 
-    "Target ID: " + json.id + " as \"" + json.description + "\"";
-  document.querySelector('#input_push_enable').value = "WebPush Enabled, click to update description of this browser";
+  document.querySelector('#return_push').innerText = json.description;
+  document.querySelector("#info_push").style.display = "inline";
+  document.querySelector('#input_push_enable').value = "update its name";
+  document.querySelector("#input_push").value = json.description;
 }
 
 function GotVapidKey() {
@@ -220,59 +266,121 @@ function EnableNotification() {
   });
 }
 
+function ContentsShow(name) {
+  var list = ['list', 'add', 'target', 'settings', 'help'];
+  list.forEach(function (name) {
+    document.querySelector('#content_' + name).style.display = 'none';
+  }, false);
+  document.querySelector('#content_' + name).style.display = 'block';
+  window.location.hash = name;
+}
+
+function DeleteItems (cat) {
+  var op_tgt = '';
+  if (cat == 'n') {op_tgt = 'notices'; }
+  else if (cat == 't') {op_tgt = 'targets'; }
+  else if (cat == 's') {op_tgt = 'schemes'; }
+  if (op_tgt == '') {return ;}
+  var inputs = document.querySelectorAll("." + cat + "_select:checked");
+  inputs.forEach(function (elem) {
+    DeleteJson(op_tgt, elem.value, LogDeletedNotice);
+  }, false);
+  document.querySelector("#input_" + cat + "_getall").click();
+}
+function SwitchNoticesTarget(opt) {
+  document.querySelector('#input_n_show_' + cur_n_target).classList.remove("show_on");
+  cur_n_target = opt;
+  document.querySelector('#input_n_show_' + cur_n_target).classList.add("show_on");
+}
+
+function DateTimeLocal () {
+  var idt = document.querySelector('#input_n_target_date').value + 'T' +
+    document.querySelector('#input_n_target_time').value + ':00.000Z';
+  var idtd = new Date(idt);
+  document.querySelector('#input_n_target').innerText = idtd.toString();
+}
+
 window.addEventListener('load', function(event) {
-  document.querySelector('#input_n_get').addEventListener('click',
-    function (e) {
-      GetJsonForId('notices', document.getElementById('input_n_id').value, 
-        ShowNotice); }, false);
   document.querySelector('#input_n_post').addEventListener('click',
     function (e) {
       PostJson('notices', GetInputNotice, ShowNotice); }, false);
   document.querySelector('#input_n_delete').addEventListener('click',
-    function (e) {
-      DeleteJson('notices', document.getElementById('input_n_id').value, 
-        LogDeletedNotice); }, false); 
+    function (e) {DeleteItems("n"); }, false);
   document.querySelector('#input_n_getall').addEventListener('click',
     function (e) {
       GetJsonForAll('notices', ShowNoticeList); }, false);
 
-  document.querySelector('#input_t_get').addEventListener('click',
-    function (e) {
-      GetJsonForId('targets', document.getElementById('input_t_id').value, 
-        ShowTarget); }, false);
   document.querySelector('#input_t_post').addEventListener('click',
     function (e) {
       PostJson('targets', GetInputTarget, ShowTarget); }, false);
   document.querySelector('#input_t_delete').addEventListener('click',
-    function (e) {
-      DeleteJson('targets', document.getElementById('input_t_id').value, 
-        LogDeletedTarget); }, false); 
+    function (e) {DeleteItems("t"); }, false); 
   document.querySelector('#input_t_getall').addEventListener('click',
     function (e) {
       GetJsonForAll('targets', ShowTargetList); }, false);
-
-  document.querySelector('#input_s_get').addEventListener('click',
+  document.querySelector('#input_t_addline').addEventListener('click',
     function (e) {
-      GetJsonForId('schemes', document.getElementById('input_s_id').value, 
-        ShowScheme); }, false);
+      document.querySelector('#t_new').style.display = 'table-row-group';
+    }, false);
+
   document.querySelector('#input_s_post').addEventListener('click',
     function (e) {
       PostJson('schemes', GetInputScheme, ShowScheme); }, false);
   document.querySelector('#input_s_delete').addEventListener('click',
-    function (e) {
-      DeleteJson('schemes', document.getElementById('input_s_id').value, 
-        LogDeletedScheme); }, false); 
+    function (e) {DeleteItems("s"); }, false);
   document.querySelector('#input_s_getall').addEventListener('click',
     function (e) {
       GetJsonForAll('schemes', ShowSchemeList); }, false);
-
-  document.querySelector('#input_clear').addEventListener('click',
+  document.querySelector('#input_s_addline').addEventListener('click',
     function (e) {
-      document.getElementById('return_error').innerHTML = ""; }, false);
+      document.querySelector('#s_new').style.display = 'table-row-group';
+    }, false);
 
   GetJsonForAll('vapid', GotVapidKey);
   document.querySelector('#input_push_enable').addEventListener('click',
     function (e) {EnableNotification(); }, false);
+
+  document.querySelector('#input_n_target_date').addEventListener('change',
+    function (e) {DateTimeLocal(); }, false);
+  document.querySelector('#input_n_target_time').addEventListener('change',
+    function (e) {DateTimeLocal(); }, false);
+
+  ['all', 'queued', 'fired', 'deleted', 'invalid', 'error', 'pushed'].forEach(
+    function (id) {
+      document.querySelector('#input_n_show_' + id).addEventListener('click',
+        function (e) {
+          GetJsonForAll('notices', ShowNoticeList, id);
+          SwitchNoticesTarget(id);
+        }, false);
+    }, false);
+
+  // init data
+  GetJsonForAll('targets', ShowTargetList);
+  // menu
+  var menu_list = ['list', 'add', 'target', 'settings', 'help'];
+  document.querySelector('#menu_list').addEventListener('click',
+    function (e) {
+      GetJsonForAll('notices', ShowNoticeList);
+      ContentsShow('list');
+    }, false);
+  document.querySelector('#menu_add').addEventListener('click',
+    function (e) {ContentsShow('add'); }, false);
+  document.querySelector('#menu_target').addEventListener('click',
+    function (e) {
+      GetJsonForAll('targets', ShowTargetList);
+      GetJsonForAll('schemes', ShowSchemeList);
+      ContentsShow('target');
+    }, false);
+  document.querySelector('#menu_settings').addEventListener('click',
+    function (e) {ContentsShow('settings'); }, false);
+  document.querySelector('#menu_help').addEventListener('click',
+    function (e) {ContentsShow('help'); }, false);
+  var url_hash = window.location.hash.substr(1);
+  if (menu_list.includes(url_hash)) {
+    document.querySelector("#menu_" + url_hash).click();
+  } else {
+    document.querySelector("#menu_list").click();
+  }
 
 });
 

@@ -1,0 +1,119 @@
+header#disp_header {
+  height: 4em; /* disp_header_height */
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: white;
+}
+header#disp_header img {
+  height: 4rem; /* disp_header_height */
+}
+header#disp_header span {
+  font-size: 2rem;
+  padding-top: 1rem;
+  margin-left: 1rem;
+  vertical-align: top;
+  display: inline-block;
+}
+#disp_sidebar {
+  width: 40px; /* disp_sidebar_width */
+  height: calc(100% - 4em); /* disp_header_height */
+  position: fixed;
+  top: 4em; /* disp_header_height */
+  left: 0;
+  background-color: white;
+  margin-top: 1em;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+.material-icons {
+  cursor: pointer;
+}
+#disp_sidebar .material-icons {
+  font-size: 36px;
+}
+.mi_inline .material-icons {
+  font-size: 1em;
+}
+div.operation {
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+div.operation .mi_inline .material-icons {
+  font-size: 1.5em;
+}
+.operation .show_on {
+  color: rgba(0, 0, 0, 1.0);
+}
+.operation div.show_off {
+  display: inline;
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.content {
+  padding-top: 4em; /* disp_header_height */
+  padding-left: 40px; /* disp_sidebar_width */
+  width: calc(100% - 40px); /* disp_sidebar_width */
+}
+.content div.panel {
+  display: none;
+}
+.content #info_push {
+  display: none;
+}
+
+table.list {
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  border: 0px;
+}
+table.list tr {
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+table .tab_t_check {
+  text-align: center;
+  width: 2em;
+}
+table #t_new, table #s_new {
+  display: none;
+}
+
+table tr.fired_0 {
+  background-color: white;
+}
+table tr.fired_1 {
+  background-color: rgb(230, 230, 230);
+}
+table tr.fired_2 {
+  background-color: rgb(200, 200, 200);
+}
+table tr.fired_3 {
+  background-color: rgb(230, 215, 255);
+}
+table tr.fired_4 {
+  background-color: rgb(255, 215, 215);
+}
+table tr.fired_5 {
+  background-color: rgb(215, 255, 230);
+}
+
+@media (max-width: 800px) {
+  #disp_sidebar {
+    width: 100%;
+    height: 40px; /* disp_sidebar_width */
+  }
+  .content {
+    padding-top: calc(4em + 40px); /* disp_header_height disp_sidebar_width */
+    padding-left: 0;
+    width: 100%;
+  }
+}
+
+.notice {
+  font-size: 2rem;
+  font-color: red;
+}

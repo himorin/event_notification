@@ -1,90 +1,269 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
   <meta charset="UTF-8" />
   <title>PFS Notification system registration site</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet">
   <link rel="stylesheet" href="global.css" type="text/css" media="all">
   <script type="text/javascript" src="global.js"></script>
-<head>
 </head>
 <body>
-<h3>Test version now</h3>
-<form>
-<ul><li>Notices<ul>
-  <li>ID: <span id="return_n_id"></span> 
-        | <input type="text" name="n_id" id="input_n_id"></li>
-  <li>SID: <span id="return_n_sid"></span> 
-        | <input type="text" name="n_sid" id="input_n_sid"></li>
-  <li>fired: <span id="return_n_fired"></span> 
-        | <input type="text" name="n_fired" id="input_n_fired"></li>
-  <li>target: <span id="return_n_target"></span> 
-        | <input type="text" name="n_target" id="input_n_target"></li>
-  <li>content: <span id="return_n_content"></span> 
-        | <input type="text" name="n_content" id="input_n_content"></li>
-  <li>tid: <span id="return_n_tid"></span> 
-        | <input type="text" name="n_tid" id="input_n_tid"></li>
-  <li>source: <span id="return_n_source"></span> 
-        | <input type="text" name="n_source" id="input_n_source"></li>
-  <li>url: <span id="return_n_url"></span> 
-        | <input type="text" name="n_url" id="input_n_url"></li>
-  <li>description: <span id="return_n_description"></span> 
-        | <input type="text" name="n_description" id="input_n_description"></li>
-  <li>LIST: <span id="ret_notices"></span></li>
-</ul></li><li>Targets<ul>
-  <li>ID: <span id="return_t_id"></span>
-        | <input type="text" name="t_id" id="input_t_id"></li>
-  <li>uname: <span id="return_t_uname"></span>
-        | <input type="text" name="t_uname" id="input_t_uname"></li>
-  <li>category: <span id="return_t_category"></span>
-        | <input type="text" name="t_category" id="input_t_category"></li>
-  <li>pid: <span id="return_t_pid"></span>
-        | <input type="text" name="t_pid" id="input_t_pid"></li>
-  <li>param: <span id="return_t_param"></span>
-        | <input type="text" name="t_param" id="input_t_param"></li>
-  <li>description: <span id="return_t_description"></span>
-        | <input type="text" name="t_description" id="input_t_description"></li>
-  <li>LIST: <span id="ret_targets"></span></li>
-</ul></li><li>Schemes<ul>
-  <li>ID: <span id="return_s_id"></span>
-        | <input type="text" name="s_id" id="input_s_id"></li>
-  <li>uname: <span id="return_s_uname"></span>
-        | <input type="text" name="s_uname" id="input_s_uname"></li>
-  <li>content: <span id="return_s_content"></span>
-        | <input type="text" name="s_content" id="input_s_content"></li>
-  <li>exec_cond: <span id="return_s_exec_cond"></span>
-        | <input type="text" name="s_exec_cond" id="input_s_exec_cond"></li>
-  <li>minutes: <span id="return_s_minutes"></span>
-        | <input type="text" name="s_minutes" id="input_s_minutes"></li>
-  <li>tid: <span id="return_s_tid"></span>
-        | <input type="text" name="s_tid" id="input_s_tid"></li>
-  <li>description: <span id="return_s_description"></span>
-        | <input type="text" name="s_description" id="input_s_description"></li>
-  <li>LIST: <span id="ret_schemes"></span></li>
-</ul></li>
-<li>WebPush: ID of this web browser <span id="return_push"></span>
-  | New description: <input type="text" name="webpush" id="input_push">
-    <input type="button" id="input_push_enable" value="Enable WebPush">
-    </li>
-</ul>
-<div>
-<span>Notice:
-<input type="button" id="input_n_get" value="Get">
-<input type="button" id="input_n_getall" value="Get All">
-<input type="button" id="input_n_post" value="Post">
-<input type="button" id="input_n_delete" value="Delete">
-</span><br /><span>Targets:
-<input type="button" id="input_t_get" value="Get">
-<input type="button" id="input_t_getall" value="Get All">
-<input type="button" id="input_t_post" value="Post">
-<input type="button" id="input_t_delete" value="Delete">
-</span><br /><span>Schemes:
-<input type="button" id="input_s_get" value="Get">
-<input type="button" id="input_s_getall" value="Get All">
-<input type="button" id="input_s_post" value="Post">
-<input type="button" id="input_s_delete" value="Delete">
-</span><br />
-<input type="button" id="input_clear" value="Clear Log">
+<header id="disp_header">
+<img src="pfs.jpeg" alt="PFS Logo" />
+<span>PFS Notification System Registration Site</span>
+</header>
+<div id="disp_sidebar">
+<span title="List notifications" id="menu_list"><i class="material-icons">list</i></span>
+<span title="Add new notification" id="menu_add"><i class="material-icons">add_circle</i></span>
+<span title="Target and Scheme" id="menu_target"><i class="material-icons">publish</i></span>
+<span title="Settings" id="menu_settings"><i class="material-icons">settings</i></span>
+<span title="Help" id="menu_help"><i class="material-icons">help</i></span>
 </div>
+
+<div class="content">
+
+<div id="content_list" class="panel">
+<div class="operation">
+<span class="mi_inline" id="input_n_getall" title="reload"><i class="material-icons">refresh</i></span>
+<span class="mi_inline" id="input_n_delete" title="delete selected"><i class="material-icons">delete</i></span>
+<span class="mi_inline">&nbsp;|&nbsp;</span>
+<div class="show_off">
+<span class="mi_inline" id="input_n_show_all" title="show all"><i class="material-icons">highlight_off</i></span>
+<span class="mi_inline show_on" id="input_n_show_queued" title="show in queue"><i class="material-icons">schedule</i></span>
+<span class="mi_inline" id="input_n_show_fired" title="show fired"><i class="material-icons">done</i></span>
+<span class="mi_inline" id="input_n_show_deleted" title="show deleted"><i class="material-icons">remove_circle_outline</i></span>
+<span class="mi_inline" id="input_n_show_invalid" title="show marked as invalid"><i class="material-icons">pause_circle_outline</i></span>
+<span class="mi_inline" id="input_n_show_error" title="show error after execution"><i class="material-icons">report_problem</i></span>
+<span class="mi_inline" id="input_n_show_pushed" title="show in execution"><i class="material-icons">call</i></span>
+</div>
+</div>
+<table class="list">
+<colgroup>
+  <col class="tab_n_check">
+  <col class="tab_n_target">
+  <col class="tab_n_tid">
+  <col class="tab_n_content">
+  <col class="tab_n_description">
+</colgroup>
+<thead>
+  <tr><td></td><td>Date/Time (UTC)</td><td>Target</td><td>Content</td>
+    <td>User memo</td></tr>
+</thead>
+<tbody id="n_list">
+</tbody>
+</table>
+
+</div>
+
+<div id="content_add" class="panel">
+<h3>Add new notification</h3>
+<form>
+<ul>
+  <li>Date/Time (UTC): 
+    <input type="date" name="n_target_date" id="input_n_target_date"
+      pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" title="yyyy-mm-dd" placeholder="yyyy-mm-dd">
+    <input type="time" name="n_target_time" id="input_n_target_time"
+      pattern="[0-9]{2}:[0-9]{2}" step="300" title="hh:mm" placeholder="hh:mm">
+    (<span id="input_n_target"></span> at your local)
+    </li>
+  <li>Content: 
+    <input type="text" name="n_content" id="input_n_content"></li>
+  <li>Target: 
+    <select name="n_tid" id="input_n_tid"></select></li>
+  <li>url:
+    <input type="text" name="n_url" id="input_n_url"></li>
+  <li>User memo:
+    <input type="text" name="n_description" id="input_n_description"></li>
+</ul>
+<input type="hidden" name="n_source" id="input_n_source" value="web">
+<input type="button" id="input_n_post" value="Add">
 </form>
-<div style="border: 1px solid black"><span id="return_error">Exec error/log to here</span></div>
+
+</div>
+
+<div id="content_target" class="panel">
+<h3>Configuration of notification targets and auto-generation scheme</h3>
+<h4>Notification targets</h4>
+<p>Currently, SMS, Phone, push notification to web browser, and email are 
+supported as notification targets. Items you configured in this section are 
+shown to be selectable when you add a new notification or you create a new 
+auto-generation scheme to add new notifications from calendar.</p>
+<p>"Target" is phone number to call or to send SMS, email address, or name for 
+your each browser to push. Phone numbers shall be in a format of international 
+call, like +1-1234567890 or +81-1234567890 ("-" is not a requirement).</p>
+
+<div class="operation">
+<span class="mi_inline" id="input_t_getall"><i class="material-icons">refresh</i></span>
+<span class="mi_inline" id="input_t_delete"><i class="material-icons">delete</i></span>
+<span class="mi_inline" id="input_t_addline"><i class="material-icons">add</i></span>
+</div>
+<table class="list">
+<colgroup>
+  <col class="tab_t_check">
+  <col class="tab_t_category">
+  <col class="tab_t_target">
+  <col class="tab_t_description">
+</colgroup>
+<thead>
+  <tr><td></td><td>Category</td><td>Target</td><td>User memo</td></tr>
+</thead>
+<tbody id="t_list">
+</tbody>
+<tbody id="t_new">
+<tr><td><span class="mi_inline" id="input_t_post"><i class="material-icons">add_box</i></span></td>
+  <td><select name="t_category" id="input_t_category">
+    <option value="sms">SMS</option>
+    <option value="phone">Phone</option>
+    <option value="email">Email</option>
+    </select>
+  <td><input type="text" name="t_pid" id="input_t_pid"></td>
+  <td><input type="text" name="t_description" id="input_t_description"></td>
+</tr>
+</tbody>
+</table>
+
+<h4>Auto-generation scheme</h4>
+<p>Items you configured in this section are checked with (new) entries in 
+google calendar of the project, and new notifications are added as configured. 
+You need to have one scheme per one notification target. "Condition" does not 
+accept regular expression nor cannot contain '%', but is just a string to be 
+in summaries of calendar entries.</p>
+<p>(Please note this is incomplete feature and could lead list of notifications 
+to be duplicated or to be added for cancelled calendar entries.)</p>
+
+<div class="operation">
+<span class="mi_inline" id="input_s_getall"><i class="material-icons">refresh</i></span>
+<span class="mi_inline" id="input_s_delete"><i class="material-icons">delete</i></span>
+<span class="mi_inline" id="input_s_addline"><i class="material-icons">add</i></span>
+</div>
+<table class="list">
+<colgroup>
+  <col class="tab_s_check">
+  <col class="tab_s_category">
+  <col class="tab_s_target">
+  <col class="tab_s_minutes">
+  <col class="tab_s_contents">
+  <col class="tab_s_description">
+</colgroup>
+<thead>
+  <tr><td></td><td>Condition</td><td>Target</td><td>Minutes</td>
+    <td>Contents</td><td>User memo</td></tr>
+</thead>
+<tbody id="s_list">
+</tbody>
+<tbody id="s_new">
+<tr><td><span class="mi_inline" id="input_s_post"><i class="material-icons">add_box</i></span></td>
+  <td><input type="text" name="s_exec_cond" id="input_s_exec_cond"></td>
+  <td><select name="n_tid" id="input_s_tid"></select></td>
+  <td><input type="text" name="s_minutes" id="input_s_minutes"></td>
+  <td><input type="text" name="s_content" id="input_s_content"></td>
+  <td><input type="text" name="s_description" id="input_s_description"></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+<div id="content_settings" class="panel">
+<h3>Local user interface configuration</h3>
+<h4>Push notification to web browser</h4>
+<div><p>To receive push notifications via your web browser, first you need to 
+enable push on your each browser. After enabling push per your web browser, 
+you can set target of notification by a name you entered to this form.</p>
+<p>Notes per browsers. 
+<ul>
+  <li>Chrome: you need to "let Google Chrome run in the background" to receive 
+    notifications while you don't open window of Chrome.</li>
+  <li>Firefox: you will not receive push notification while you don't open 
+    window of Firefox.</li>
+  <li>Edge: you need to revisit to this web page every per 30days.</li>
+</ul>
+<p><span id="info_push">You have already enabled push notification for this 
+browser with name "<span id="return_push"></span>".</span><br />
+You can name push notification to this browser as 
+<input type="text" name="webpush" id="input_push">
+and <input type="button" id="input_push_enable" value="enable WebPush">
+</p>
+</div>
+</div>
+
+<div id="content_help" class="panel mi_inline">
+<h3>General</h3>
+<p>Operations are configured by three categories of data: notification, target, 
+and scheme. 
+One 'notification' is a single entry of notification to be executed at 
+specified time to specified target. 
+'target' is used for where notifications are delivered, like phone, SMS, 
+or push notification to browsers. These are defined per user, and not shared 
+among users. 
+'scheme' is executed at server and is used to add a new notification from 
+google calendar following configuration in scheme. If you have periodically 
+scheduled meetings, system will add notifications following your 'scheme'. 
+</p>
+<p>Four panels (with this help panel) are provided for operation. Each icon 
+is for following panel.</p>
+<ul>
+  <li><i class="material-icons">list</i> List of notifications</li>
+  <li><i class="material-icons">add_circle</i> Add new notification</li>
+  <li><i class="material-icons">publish</i> Configure targets and schemes</li>
+  <li><i class="material-icons">settings</i> Your browser local configurations</li>
+</ul>
+<p>
+Following icons are used to show operations by user:
+</p>
+<ul>
+  <li><i class="material-icons">refresh</i> Reload list</li>
+  <li><i class="material-icons">delete</i> Delete selected items in list</li>
+  <li><i class="material-icons">add</i> Add new item</li>
+</ul>
+
+<h3>Notifications</h3>
+<p>One 'notification' will be executed as one notification to user, which has 
+properties of </p>
+<ul>
+  <li>Date/Time (UTC): target date/time when notification to be done, in UTC.</li>
+  <li>Target: select one notification target from list of your 'target'.</li>
+  <li>Content: content to be pushed as notification (like text message for SMS, voice message for Phone). Refer details and limitations in 'Notification targets' section.</li>
+  <li>User memo: you can leave any memo in this field.</li>
+  <li>URL: URL of a web page for webpush (push notification to your browser) which will be opened when you click poped up push notification.</li>
+</ul>
+<p>and also two statuses, one is for current execution status (like queued or 
+fired), another is a reference ID of execution to external system (only 
+internal use).</p>
+<p>In list of notifications, you can 'delete' selected notification, which 
+just marks the entry as 'deleted' but not to delete one from database. 
+Current execution status is shown as icon as follows, and you can filter target 
+to be listed in view with clicking one of following icons shown next to 
+'delete' button.</p>
+<ul>
+  <li><i class="material-icons">highlight_off</i> show all</li>
+  <li><i class="material-icons">schedule</i> queued</li>
+  <li><i class="material-icons">done</i> fired</li>
+  <li><i class="material-icons">remove_circle_outline</i> deleted</li>
+  <li><i class="material-icons">pause_circle_outline</i> marked as invalid</li>
+  <li><i class="material-icons">report_problem</i> error after execution</li>
+  <li><i class="material-icons">call</i> in execution</li>
+</ul>
+<p>Some system does not return execution result, and notifications to these 
+could remain 'in execution' even notification is successfully fired.</p>
+
+<h3>Notification targets</h3>
+<p>Following limitations are applied for notification configuration.</p>
+
+<h4>SMS, Phone</h4>
+<p>All charactors are used for output text or voice, you cannot have any 
+control sequence nor unvocable charactor.</p>
+
+<h4>Email</h4>
+<p>First line will be used as Subject of email.</p>
+
+<h4>Push notification to browser</h4>
+<p>Long 'content' of notification could be trimmed by your web browser on 
+showing popup.</p>
+
+</div>
+
+</div>
 </body>
 </html>

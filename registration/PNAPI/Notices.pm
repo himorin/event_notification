@@ -33,14 +33,17 @@ sub search {
   my $fired_id = STATE_QUEUED;
   my $fired_sth = 'AND fired = ?';
   if (defined($hash->{state})) {
-    if ($hash->{state} eq 'fired') {$fired_id = STATE_FIRED; }
-    elsif ($hash->{state} eq 'deleted') {$fired_id = STATE_DELETED; }
-    elsif ($hash->{state} eq 'queued') {}
-    else {$fired_sth = ''; }
-  } else {$fired_sth = ''; }
+    my $stid = { 'queued' => STATE_QUEUED, 'fired' => STATE_FIRED, 
+      'deleted' => STATE_DELETED, 'invalid' => STATE_INVALID, 
+      'error' => STATE_ERROR, 'pushed' => STATE_PUSHED };
+    if (defined($stid->{$hash->{state}})) {$fired_id = $stid->{$hash->{state}}; }
+    elsif ($hash->{state} eq 'all') {$fired_sth = ''; $fired_id = undef; }
+    else {$fired_sth = ''; $fired_id = undef; }
+  } else {$fired_sth = ''; $fired_id = undef; }
   my $q = "SELECT notices.* FROM notices INNER JOIN targets ON notices.tid = targets.id WHERE targets.uname = ? $fired_sth";
   my $sth = $dbh->prepare($q);
-  $sth->execute($uname, $fired_id);
+  if (defined($fired_id)) {$sth->execute($uname, $fired_id); }
+  else {$sth->execute($uname); }
   if ($sth->rows() < 1) {return undef; }
   return $sth->fetchall_hashref('id');
 }

@@ -24,7 +24,9 @@ sub get {
   my $sth = $dbh->prepare('SELECT * FROM schemes WHERE id = ?');
   $sth->execute($name);
   if ($sth->rows != 1) {return undef; }
-  return $sth->fetchrow_hashref();
+  my $ret = $sth->fetchrow_hashref();
+  $ret->{exec_cond} =~ s/^%?([^%]+)%?$/$1/;
+  return $ret;
 }
 
 sub search {
@@ -33,7 +35,11 @@ sub search {
   my $sth = $dbh->prepare('SELECT * FROM schemes WHERE uname = ?');
   $sth->execute($uname);
   if ($sth->rows() < 1) {return undef; }
-  return $sth->fetchall_hashref('id');
+  my $ret = $sth->fetchall_hashref('id');
+  foreach my $id (keys(%$ret)) {
+    $ret->{$id}->{exec_cond} =~ s/^%?([^%]+)%?$/$1/;
+  }
+  return $ret;
 }
 
 sub add {
@@ -41,6 +47,7 @@ sub add {
   my $add_id = undef;
   if (defined($hash->{content}) && defined($hash->{minutes}) && 
     defined($hash->{tid}) && defined($hash->{exec_cond})) {
+    if (index($hash->{exec_cond}, '%') > -1) {return undef; }
     my $sth = $dbh->prepare('INSERT INTO schemes (uname, content, exec_cond, minutes, tid, description) VALUES (?, ?, ?, ?, ?, ?)');
     if ($sth->execute($uname, $hash->{content}, '%' . $hash->{exec_cond} . '%',
       $hash->{minutes}, $hash->{tid}, $hash->{description}) == 0)
