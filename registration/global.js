@@ -49,6 +49,10 @@ function GetJsonForAll (target, show_handler, opt) {
     throw Error("Returned response " + response.status);
   }).then(function(response) {
     ret_hash[target] = response;
+    if (list_actions.includes(target)) {
+      document.querySelector('#input_' + target + '_count').innerText = 
+        Object.keys(response).length;
+    }
     show_handler(response);
   }).catch(function(error) {
     ShowError("Error occured: " + error.message);
