@@ -160,8 +160,8 @@ function UpdateTidSelect (target) {
 }
 
 function ShowScheme (json) {
-  document.querySelector('#s_new').style.display = 'none';
   document.querySelector("#s_list").innerHTML += GetSchemeLine(json);
+  AddFormShow('close');
 }
 function ShowSchemeList (json) {
   document.querySelector("#s_list").innerHTML = "";
@@ -271,8 +271,23 @@ function ContentsShow(name) {
   list.forEach(function (name) {
     document.querySelector('#content_' + name).style.display = 'none';
   }, false);
-  document.querySelector('#content_' + name).style.display = 'block';
-  window.location.hash = name;
+  if (list.includes(name)) {
+    document.querySelector('#content_' + name).style.display = 'block';
+    window.location.hash = name;
+  }
+}
+function AddFormShow(name) {
+  var list = ['notice', 'target', 'scheme'];
+  list.forEach(function (name) {
+    document.querySelector('#form_' + name).style.display = 'none';
+  }, false);
+  if (list.includes(name)) {
+    document.querySelector('#form_' + name).style.display = 'block';
+    document.querySelector('#content_info').style.display = 'block';
+  } else if (name == 'close') {
+    document.querySelector('#content_info').style.display = 'none';
+    document.querySelector('#content_form').reset();
+  }
 }
 
 function DeleteItems (cat) {
@@ -331,10 +346,10 @@ window.addEventListener('load', function(event) {
   document.querySelector('#input_s_getall').addEventListener('click',
     function (e) {
       GetJsonForAll('schemes', ShowSchemeList); }, false);
-  document.querySelector('#input_s_addline').addEventListener('click',
-    function (e) {
-      document.querySelector('#s_new').style.display = 'table-row-group';
-    }, false);
+  document.querySelector('#input_s_showadd').addEventListener('click',
+    function (e) {AddFormShow('scheme'); }, false);
+  document.querySelector('#input_s_close').addEventListener('click',
+    function (e) {AddFormShow('close'); }, false);
 
   GetJsonForAll('vapid', GotVapidKey);
   document.querySelector('#input_push_enable').addEventListener('click',
@@ -381,6 +396,15 @@ window.addEventListener('load', function(event) {
   } else {
     document.querySelector("#menu_list").click();
   }
+
+  document.querySelector('#menu_dev').addEventListener('click', 
+    function (e) {
+      document.querySelector('#content_info').style.display = 'block';
+    }, false);
+  document.querySelector('#info_front').addEventListener('click', 
+    function (e) {e.stopPropagation(); }, false);
+  document.querySelector('#info_back').addEventListener('click',
+    function (e) {AddFormShow('close'); }, false);
 
 });
 

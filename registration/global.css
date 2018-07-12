@@ -82,23 +82,64 @@ table #t_new, table #s_new {
   display: none;
 }
 
-table tr.fired_0 {
+table tr.fired_0 {background-color: white; }
+table tr.fired_1 {background-color: rgb(230, 230, 230); }
+table tr.fired_2 {background-color: rgb(200, 200, 200); }
+table tr.fired_3 {background-color: rgb(230, 215, 255); }
+table tr.fired_4 {background-color: rgb(255, 215, 215); }
+table tr.fired_5 {background-color: rgb(215, 255, 230); }
+
+div.wall_back {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(120, 120, 120, 0.4);
+  overflow: auto;
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+div.wall_front {
+  padding: 20px;
   background-color: white;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 400px;
+  min-height: 400px;
+  width: 70%;
 }
-table tr.fired_1 {
-  background-color: rgb(230, 230, 230);
+
+form#content_form input[type="number"] {
+  width: 4em;
 }
-table tr.fired_2 {
-  background-color: rgb(200, 200, 200);
+form#content_form div.help {
+  margin-left: 5em;
 }
-table tr.fired_3 {
-  background-color: rgb(230, 215, 255);
+form#content_form div.input_content {
+  width: 90%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
-table tr.fired_4 {
-  background-color: rgb(255, 215, 215);
+form#content_form div.input_content textarea {
+  width: 100%;
+  min-height: 7em;
+  min-width: 100%;
+  max-width: 100%;
 }
-table tr.fired_5 {
-  background-color: rgb(215, 255, 230);
+form#content_form label {
+  font-weight: border;
+}
+form#content_form div.input_button {
+  margin-top: 1em;
+  text-align: right;
 }
 
 @media (max-width: 800px) {
@@ -111,9 +152,18 @@ table tr.fired_5 {
     padding-left: 0;
     width: 100%;
   }
+  div.wall_front {
+    width: 560px;
+  }
+}
+@media (max-width: 560px) {
+  div.wall_front {
+    width: 100%;
+  }
 }
 
 .notice {
   font-size: 2rem;
   font-color: red;
 }
+

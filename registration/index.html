@@ -19,6 +19,7 @@
 <span title="Target and Scheme" id="menu_target"><i class="material-icons">publish</i></span>
 <span title="Settings" id="menu_settings"><i class="material-icons">settings</i></span>
 <span title="Help" id="menu_help"><i class="material-icons">help</i></span>
+<span title="Development" id="menu_dev"><i class="material-icons">info</i></span>
 </div>
 
 <div class="content">
@@ -135,7 +136,7 @@ to be duplicated or to be added for cancelled calendar entries.)</p>
 <div class="operation">
 <span class="mi_inline" id="input_s_getall"><i class="material-icons">refresh</i></span>
 <span class="mi_inline" id="input_s_delete"><i class="material-icons">delete</i></span>
-<span class="mi_inline" id="input_s_addline"><i class="material-icons">add</i></span>
+<span class="mi_inline" id="input_s_showadd"><i class="material-icons">add</i></span>
 </div>
 <table class="list">
 <colgroup>
@@ -151,15 +152,6 @@ to be duplicated or to be added for cancelled calendar entries.)</p>
     <td>Contents</td><td>User memo</td></tr>
 </thead>
 <tbody id="s_list">
-</tbody>
-<tbody id="s_new">
-<tr><td><span class="mi_inline" id="input_s_post"><i class="material-icons">add_box</i></span></td>
-  <td><input type="text" name="s_exec_cond" id="input_s_exec_cond"></td>
-  <td><select name="n_tid" id="input_s_tid"></select></td>
-  <td><input type="text" name="s_minutes" id="input_s_minutes"></td>
-  <td><input type="text" name="s_content" id="input_s_content"></td>
-  <td><input type="text" name="s_description" id="input_s_description"></td>
-</tr>
 </tbody>
 </table>
 
@@ -262,6 +254,55 @@ control sequence nor unvocable charactor.</p>
 <p>Long 'content' of notification could be trimmed by your web browser on 
 showing popup.</p>
 
+</div>
+
+<div id="content_info" class="panel">
+<div id="info_back" class="wall_back">
+<div id="info_front" class="wall_front">
+  <form id="content_form">
+
+  <div id="form_notice">
+  </div>
+
+  <div id="form_target">
+  </div>
+
+  <div id="form_scheme">
+    <h3>Add new notification auto-generation scheme</h3>
+    <div>
+    <label>Calendar entry match condition:</label>
+      <input type="text" name="s_exec_cond" id="input_s_exec_cond" size="30">
+      <div class="help">
+        This will be used to match between notification auto-generation 
+        scheme and subject of calendar entry, to get pairs to be added as 
+        new notification. If input to this field (like "SpS") is contained 
+        in subject of calendar entry (like "Weekly SpS telecon"), 
+        new notification will be added.</div>
+    <label>Notification target:</label>
+      <select name="n_tid" id="input_s_tid"></select>
+      <br />
+    <label>Add notification </label>
+      <input type="number" name="s_minutes" id="input_s_minutes"
+        value="0" step="5">
+      minutes before start time of calendar entry
+      <br />
+    <label>User memo on this scheme:</label>
+      <input type="text" name="s_description" id="input_s_description" size="30">
+      <br />
+    <label>Content to be used in notification:</label>
+      <div class="input_content">
+        <textarea name="s_content" id="input_s_content"></textarea>
+      </div>
+    </div>
+    <div class="input_button">
+      <input type="button" id="input_s_post" value="Add">
+      <input type="button" id="input_s_close" value="Cancel">
+    </div>
+  </div>
+
+  </form>
+</div>
+</div>
 </div>
 
 </div>
