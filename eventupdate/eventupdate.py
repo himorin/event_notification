@@ -57,16 +57,20 @@ def ListUpdatedEvents(site_config):
             founds[found['id']] = found
     return founds
 
-def StringDT(str):
+def StringDT(str, minus):
     ret = datetime.datetime.utcnow()
+    fmt = '%Y-%m-%dT%H:%M:%S'
+    if str[19] == '.':
+      fmt += '.%f'
     if str[-1] == 'Z':
-        ret = datetime.datetime.strptime(str, '%Y-%m-%dT%H:%M:%S.%fZ')
+        ret = datetime.datetime.strptime(str, fmt + 'Z')
     elif str[-5] == '+' or str[-5] == '-':
-        ret = datetime.datetime.strptime(str, '%Y-%m-%dT%H:%M:%S%z')
+        ret = datetime.datetime.strptime(str, fmt + '%z')
     elif (str[-6] == '+' or str[-6] == '-') and (str[-3] == ':'):
         val = str[0:-3] + str[-2:]
-        ret = datetime.datetime.strptime(val, '%Y-%m-%dT%H:%M:%S%z')
-    return ret
+        ret = datetime.datetime.strptime(val, fmt + '%z')
+    ret -= datetime.timedelta(minutes = minus)
+    return (ret - ret.utcoffset())
 
 if __name__ == "__main__":
     site_config = LoadConfig()
@@ -85,8 +89,7 @@ if __name__ == "__main__":
         else:
             add_new = dbh.ListSchemes(event['summary'])
             for add in add_new.keys():
-                fire = StringDT(event['start']) - datetime.timedelta(
-                    minutes = add_new[add]['minutes'])
+                fire = StringDT(event['start'], add_new[add]['minutes'])
                 val = {
                     'target': fire.timestamp(),
                     'content': add_new[add]['content'],
