@@ -270,29 +270,37 @@ showing popup.</p>
   <div id="form_scheme">
     <h3>Add new notification auto-generation scheme</h3>
     <div>
-    <label>Calendar entry match condition:</label>
-      <input type="text" name="s_exec_cond" id="input_s_exec_cond" size="30">
-      <div class="help">
-        This will be used to match between notification auto-generation 
-        scheme and subject of calendar entry, to get pairs to be added as 
-        new notification. If input to this field (like "SpS") is contained 
-        in subject of calendar entry (like "Weekly SpS telecon"), 
-        new notification will be added.</div>
-    <label>Notification target:</label>
-      <select name="n_tid" id="input_s_tid"></select>
-      <br />
-    <label>Add notification </label>
-      <input type="number" name="s_minutes" id="input_s_minutes"
-        value="0" step="5">
-      minutes before start time of calendar entry
-      <br />
-    <label>User memo on this scheme:</label>
-      <input type="text" name="s_description" id="input_s_description" size="30">
-      <br />
-    <label>Content to be used in notification:</label>
-      <div class="input_content">
-        <textarea name="s_content" id="input_s_content"></textarea>
-      </div>
+      <span class="label">Calendar entry match condition:</span>
+        <input type="text" name="s_exec_cond" id="input_s_exec_cond" size="30">
+        <div class="help">
+          This will be used to match between notification auto-generation 
+          scheme and subject of calendar entry, to get pairs to be added as 
+          new notification. If input to this field (like "SpS") is contained 
+          in subject of calendar entry (like "Weekly SpS telecon"), 
+          new notification will be added.
+          No control sequence (like one from regular expression) is evaluated, 
+          this cannot have '%'.
+        </div>
+      <span class="label">Notification target:</span>
+        <select name="n_tid" id="input_s_tid"></select>
+        <br />
+      <span class="label">Add notification </span>
+        <input type="number" name="s_minutes" id="input_s_minutes"
+          value="0" step="5">
+        minutes before start time of calendar entry
+        <br />
+      <span class="label">User memo on this scheme:</span>
+        <input type="text" name="s_description" id="input_s_description"
+          size="30">
+        <br />
+      <span class="label">Content to be used in notification:</span>
+        <div class="input_content">
+          <textarea name="s_content" id="input_s_content"></textarea>
+        </div>
+        <div class="help">
+          This will be copied to 'Content' of generated/added notification. 
+          For 'email' target, the first line will be used as email subject. 
+        </div>
     </div>
     <div class="input_button">
       <input type="button" id="input_s_post" value="Add">

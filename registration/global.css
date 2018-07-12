@@ -134,8 +134,8 @@ form#content_form div.input_content textarea {
   min-width: 100%;
   max-width: 100%;
 }
-form#content_form label {
-  font-weight: border;
+form#content_form span.label {
+  font-weight: bolder;
 }
 form#content_form div.input_button {
   margin-top: 1em;
