@@ -3,6 +3,7 @@ var api_head = "json.cgi/";
 var ret_hash = {};
 var cur_n_target = "queued";
 var tid_select = ['input_n_tid', 'input_s_tid'];
+var target_cg = ['sms', 'phone', 'email', 'webpush'];
 
 var n_fired_icon = {
   0: { 'title': 'notification queued', 'icon': 'schedule' },
@@ -151,11 +152,22 @@ function UpdateTidSelect (target) {
   var cn;
   var tcn = document.querySelector('#' + target);
   while ((cn = tcn.firstChild) != null) {tcn.removeChild(cn); }
+  target_cg.forEach(function (item) {
+    var og = document.createElement('optgroup');
+    og.setAttribute('label', item);
+    og.setAttribute('id', target + '_og_' + item);
+    og.innerHTML = item;
+    tcn.appendChild(og);
+  }, false);
   Object.keys(ret_hash['targets']).forEach(function (id) {
     var opt = document.createElement('option');
     opt.setAttribute('value', id);
     opt.innerHTML = GetTargetShort(id);
-    tcn.appendChild(opt);
+    if (target_cg.includes(ret_hash['targets'][id]['category'])) {
+      document.querySelector('#' + target + '_og_' + ret_hash['targets'][id]['category']).appendChild(opt);
+    } else {
+      tcn.appendChild(opt);
+    }
   }, false);
 }
 
