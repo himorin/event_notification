@@ -15,19 +15,18 @@
 </header>
 <div id="disp_sidebar">
 <span title="List notifications" id="menu_list"><i class="material-icons">list</i></span>
-<span title="Add new notification" id="menu_add"><i class="material-icons">add_circle</i></span>
 <span title="Target and Scheme" id="menu_target"><i class="material-icons">publish</i></span>
 <span title="Settings" id="menu_settings"><i class="material-icons">settings</i></span>
 <span title="Help" id="menu_help"><i class="material-icons">help</i></span>
-<span title="Development" id="menu_dev"><i class="material-icons">info</i></span>
 </div>
 
 <div class="content">
 
 <div id="content_list" class="panel">
 <div class="operation">
-<span class="mi_inline" id="input_n_getall" title="reload"><i class="material-icons">refresh</i></span>
-<span class="mi_inline" id="input_n_delete" title="delete selected"><i class="material-icons">delete</i></span>
+<span class="mi_inline" id="input_notices_getall" title="reload"><i class="material-icons">refresh</i></span>
+<span class="mi_inline" id="input_notices_delete" title="delete selected"><i class="material-icons">delete</i></span>
+<span class="mi_inline" id="input_notices_showadd"><i class="material-icons">add</i></span>
 <span class="mi_inline">&nbsp;|&nbsp;</span>
 <div class="show_off">
 <span class="mi_inline" id="input_n_show_all" title="show all"><i class="material-icons">highlight_off</i></span>
@@ -57,32 +56,6 @@
 
 </div>
 
-<div id="content_add" class="panel">
-<h3>Add new notification</h3>
-<form>
-<ul>
-  <li>Date/Time (UTC): 
-    <input type="date" name="n_target_date" id="input_n_target_date"
-      pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" title="yyyy-mm-dd" placeholder="yyyy-mm-dd">
-    <input type="time" name="n_target_time" id="input_n_target_time"
-      pattern="[0-9]{2}:[0-9]{2}" step="300" title="hh:mm" placeholder="hh:mm">
-    (<span id="input_n_target"></span> at your local)
-    </li>
-  <li>Content: 
-    <input type="text" name="n_content" id="input_n_content"></li>
-  <li>Target: 
-    <select name="n_tid" id="input_n_tid"></select></li>
-  <li>url:
-    <input type="text" name="n_url" id="input_n_url"></li>
-  <li>User memo:
-    <input type="text" name="n_description" id="input_n_description"></li>
-</ul>
-<input type="hidden" name="n_source" id="input_n_source" value="web">
-<input type="button" id="input_n_post" value="Add">
-</form>
-
-</div>
-
 <div id="content_target" class="panel">
 <h3>Configuration of notification targets and auto-generation scheme</h3>
 <h4>Notification targets</h4>
@@ -90,14 +63,11 @@
 supported as notification targets. Items you configured in this section are 
 shown to be selectable when you add a new notification or you create a new 
 auto-generation scheme to add new notifications from calendar.</p>
-<p>"Target" is phone number to call or to send SMS, email address, or name for 
-your each browser to push. Phone numbers shall be in a format of international 
-call, like +1-1234567890 or +81-1234567890 ("-" is not a requirement).</p>
 
 <div class="operation">
-<span class="mi_inline" id="input_t_getall"><i class="material-icons">refresh</i></span>
-<span class="mi_inline" id="input_t_delete"><i class="material-icons">delete</i></span>
-<span class="mi_inline" id="input_t_addline"><i class="material-icons">add</i></span>
+<span class="mi_inline" id="input_targets_getall"><i class="material-icons">refresh</i></span>
+<span class="mi_inline" id="input_targets_delete"><i class="material-icons">delete</i></span>
+<span class="mi_inline" id="input_targets_showadd"><i class="material-icons">add</i></span>
 </div>
 <table class="list">
 <colgroup>
@@ -111,17 +81,6 @@ call, like +1-1234567890 or +81-1234567890 ("-" is not a requirement).</p>
 </thead>
 <tbody id="t_list">
 </tbody>
-<tbody id="t_new">
-<tr><td><span class="mi_inline" id="input_t_post"><i class="material-icons">add_box</i></span></td>
-  <td><select name="t_category" id="input_t_category">
-    <option value="sms">SMS</option>
-    <option value="phone">Phone</option>
-    <option value="email">Email</option>
-    </select>
-  <td><input type="text" name="t_pid" id="input_t_pid"></td>
-  <td><input type="text" name="t_description" id="input_t_description"></td>
-</tr>
-</tbody>
 </table>
 
 <h4>Auto-generation scheme</h4>
@@ -134,9 +93,9 @@ in summaries of calendar entries.</p>
 to be duplicated or to be added for cancelled calendar entries.)</p>
 
 <div class="operation">
-<span class="mi_inline" id="input_s_getall"><i class="material-icons">refresh</i></span>
-<span class="mi_inline" id="input_s_delete"><i class="material-icons">delete</i></span>
-<span class="mi_inline" id="input_s_showadd"><i class="material-icons">add</i></span>
+<span class="mi_inline" id="input_schemes_getall"><i class="material-icons">refresh</i></span>
+<span class="mi_inline" id="input_schemes_delete"><i class="material-icons">delete</i></span>
+<span class="mi_inline" id="input_schemes_showadd"><i class="material-icons">add</i></span>
 </div>
 <table class="list">
 <colgroup>
@@ -197,7 +156,6 @@ scheduled meetings, system will add notifications following your 'scheme'.
 is for following panel.</p>
 <ul>
   <li><i class="material-icons">list</i> List of notifications</li>
-  <li><i class="material-icons">add_circle</i> Add new notification</li>
   <li><i class="material-icons">publish</i> Configure targets and schemes</li>
   <li><i class="material-icons">settings</i> Your browser local configurations</li>
 </ul>
@@ -261,13 +219,81 @@ showing popup.</p>
 <div id="info_front" class="wall_front">
   <form id="content_form">
 
-  <div id="form_notice">
+  <div id="form_notices">
+    <h3>Add new notification</h3>
+    <div>
+      <span class="label">Date/Time (UTC):</span>
+        <input type="date" name="n_targets_date" id="input_n_targets_date"
+        pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" 
+        title="yyyy-mm-dd" placeholder="yyyy-mm-dd">
+        <input type="time" name="n_targets_time" id="input_n_targets_time"
+        pattern="[0-9]{2}:[0-9]{2}" step="300"
+        title="hh:mm" placeholder="hh:mm" value="00:00">
+        (<span id="input_n_target"></span> at your local)
+      <br />
+      <span class="label">Target:</span>
+        <select name="n_tid" id="input_n_tid"></select>
+        <br />
+      <span class="label">URL:</span>
+        <input type="text" name="n_url" id="input_n_url" size="100">
+        <div class="help">
+          This will be used only for webpush target, which will be shown as 
+          a new tab when you click notification tab. 
+        </div>
+      <span class="label">User memo:</span>
+        <input type="text" name="n_description" id="input_n_description"
+        size="30">
+        <br />
+      <span class="label">Content:</span>
+        <div class="input_content">
+          <textarea name="n_content" id="input_n_content"></textarea>
+        </div>
+        <div class="help">
+          This will be used for text contents of notification. 
+          For 'email' target, the first line will be used as email subject. 
+        </div>
+      <input type="hidden" name="n_source" id="input_n_source" value="web">
+    </div>
+    <div class="input_button">
+      <input type="button" id="input_notices_post" value="Add">
+      <input type="button" id="input_notices_close" value="Cancel">
+    </div>
   </div>
 
-  <div id="form_target">
+  <div id="form_targets">
+    <h3>Add new notification target</h3>
+    <div>
+      <span class="label">Category of target:</span>
+        <select name="t_category" id="input_t_category">
+          <option value="sms">SMS</option>
+          <option value="phone">Phone</option>
+          <option value="email">Email</option>
+        </select>
+        <br />
+      <span class="label">Target identifier:</span>
+        <input type="text" name="t_pid" id="input_t_pid" size="30">
+        <br />
+        <div class="help">
+          This is phone number to call or to send SMS, email address, or name 
+          for your each browser to push. 
+          Phone numbers shall be in a format of international call, like 
+          +1-1234567890 or +81-1234567890 ("-" is not a requirement, but "+" 
+          is required).
+          'webpush' need to be configured from 'Settings' on each browser, and 
+          you cannot configure them here. 
+        </div>
+      <span class="label">User memo on this target:</span>
+        <input type="text" name="t_description" id="input_t_description"
+          size="30">
+        <br />
+    </div>
+    <div class="input_button">
+      <input type="button" id="input_targets_post" value="Add">
+      <input type="button" id="input_targets_close" value="Cancel">
+    </div>
   </div>
 
-  <div id="form_scheme">
+  <div id="form_schemes">
     <h3>Add new notification auto-generation scheme</h3>
     <div>
       <span class="label">Calendar entry match condition:</span>
@@ -303,8 +329,8 @@ showing popup.</p>
         </div>
     </div>
     <div class="input_button">
-      <input type="button" id="input_s_post" value="Add">
-      <input type="button" id="input_s_close" value="Cancel">
+      <input type="button" id="input_schemes_post" value="Add">
+      <input type="button" id="input_schemes_close" value="Cancel">
     </div>
   </div>
 

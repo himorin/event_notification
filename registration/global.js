@@ -3,7 +3,8 @@ var api_head = "json.cgi/";
 var ret_hash = {};
 var cur_n_target = "queued";
 var tid_select = ['input_n_tid', 'input_s_tid'];
-var target_cg = ['sms', 'phone', 'email', 'webpush'];
+var targets_cg = ['sms', 'phone', 'email', 'webpush'];
+var list_actions = ['notices', 'targets', 'schemes'];
 
 var n_fired_icon = {
   0: { 'title': 'notification queued', 'icon': 'schedule' },
@@ -44,6 +45,7 @@ function GetJsonForAll (target, show_handler, opt) {
     method: 'GET', redirect: 'follow' })
   .then(function(response) {
     if (response.ok) {return response.json(); }
+    if (response.status == 404) {return {}; }
     throw Error("Returned response " + response.status);
   }).then(function(response) {
     ret_hash[target] = response;
@@ -87,6 +89,7 @@ function DeleteJson (target, id, show_handler) {
 
 function ShowNotice(json) {
   document.querySelector("#n_list").innerHTML += GetNoticeLine(json);
+  AddFormShow('close');
 }
 function ShowNoticeList(json) {
   document.querySelector("#n_list").innerHTML = "";
@@ -97,7 +100,7 @@ function ShowNoticeList(json) {
 function GetNoticeLine (elem) {
   var cur = "<tr id=\"n_tr_" + elem.id + "\" class=\"fired_" + elem.fired + "\">";
   cur += "<td>";
-  cur += "<input type=\"checkbox\" name=\"n_select\" value=\"" + elem.id + "\" class=\"n_select\">";
+  cur += "<input type=\"checkbox\" name=\"notices_select\" value=\"" + elem.id + "\" class=\"notices_select\">";
   cur += "<span class=\"mi_inline\" title=\"" + n_fired_icon[elem.fired].title + "\"><i class=\"material-icons\">" + n_fired_icon[elem.fired].icon + "</i></span>";
   cur += "</td>";
   cur += "<td>" + elem.target + "</td>";
@@ -109,8 +112,8 @@ function GetNoticeLine (elem) {
 }
 
 function ShowTarget(json) {
-  document.querySelector('#t_new').style.display = 'none';
   document.querySelector("#t_list").innerHTML += GetTargetLine(json);
+  AddFormShow('close');
 }
 function ShowTargetList (json) {
   document.querySelector("#t_list").innerHTML = "";
@@ -122,7 +125,7 @@ function ShowTargetList (json) {
 
 function GetTargetLine (elem) {
   var cur = "<tr id=\"t_tr_" + elem.id + "\">";
-  cur += "<td><input type=\"checkbox\" name=\"t_select\" value=\"" + elem.id + "\" class=\"t_select\"></td>";
+  cur += "<td><input type=\"checkbox\" name=\"targets_select\" value=\"" + elem.id + "\" class=\"targets_select\"></td>";
   cur += "<td>" + elem.category + "</td>";
   cur += "<td>" + ValToStr(GetTargetLabel(elem)) + "</td>";
   cur += "<td>" + ValToStr(GetTargetDescription(elem)) + "</td>";
@@ -152,7 +155,7 @@ function UpdateTidSelect (target) {
   var cn;
   var tcn = document.querySelector('#' + target);
   while ((cn = tcn.firstChild) != null) {tcn.removeChild(cn); }
-  target_cg.forEach(function (item) {
+  targets_cg.forEach(function (item) {
     var og = document.createElement('optgroup');
     og.setAttribute('label', item);
     og.setAttribute('id', target + '_og_' + item);
@@ -163,7 +166,7 @@ function UpdateTidSelect (target) {
     var opt = document.createElement('option');
     opt.setAttribute('value', id);
     opt.innerHTML = GetTargetShort(id);
-    if (target_cg.includes(ret_hash['targets'][id]['category'])) {
+    if (targets_cg.includes(ret_hash['targets'][id]['category'])) {
       document.querySelector('#' + target + '_og_' + ret_hash['targets'][id]['category']).appendChild(opt);
     } else {
       tcn.appendChild(opt);
@@ -183,7 +186,7 @@ function ShowSchemeList (json) {
 }
 function GetSchemeLine (elem) {
   var cur = "<tr id=\"s_tr_" + elem.id + "\">";
-  cur += "<td><input type=\"checkbox\" name=\"s_select\" value=\"" + elem.id + "\" class=\"s_select\"></td>";
+  cur += "<td><input type=\"checkbox\" name=\"schemes_select\" value=\"" + elem.id + "\" class=\"schemes_select\"></td>";
   cur += "<td>" + elem.exec_cond + "</td>";
   cur += "<td>" + GetTargetShort(elem.tid) + "</td>";
   cur += "<td>" + elem.minutes + "</td>";
@@ -207,8 +210,8 @@ function GetInputNotice () {
   list.forEach(function(id) {
     var cdata = document.querySelector('#input_n_' + id).value;
     if (cdata != '') {data[id] = cdata; } }, false);
-  data['target'] = document.querySelector('#input_n_target_date').value + 'T' +
-    document.querySelector('#input_n_target_time').value + ':00.000Z';
+  data['target'] = document.querySelector('#input_n_targets_date').value + 'T' +
+    document.querySelector('#input_n_targets_time').value + ':00.000Z';
   return data;
 }
 
@@ -279,7 +282,7 @@ function EnableNotification() {
 }
 
 function ContentsShow(name) {
-  var list = ['list', 'add', 'target', 'settings', 'help'];
+  var list = ['list', 'target', 'settings', 'help'];
   list.forEach(function (name) {
     document.querySelector('#content_' + name).style.display = 'none';
   }, false);
@@ -289,7 +292,7 @@ function ContentsShow(name) {
   }
 }
 function AddFormShow(name) {
-  var list = ['notice', 'target', 'scheme'];
+  var list = ['notices', 'targets', 'schemes'];
   list.forEach(function (name) {
     document.querySelector('#form_' + name).style.display = 'none';
   }, false);
@@ -303,14 +306,10 @@ function AddFormShow(name) {
 }
 
 function DeleteItems (cat) {
-  var op_tgt = '';
-  if (cat == 'n') {op_tgt = 'notices'; }
-  else if (cat == 't') {op_tgt = 'targets'; }
-  else if (cat == 's') {op_tgt = 'schemes'; }
-  if (op_tgt == '') {return ;}
+  if (! list_actions.includes(cat)) {return ;}
   var inputs = document.querySelectorAll("." + cat + "_select:checked");
   inputs.forEach(function (elem) {
-    DeleteJson(op_tgt, elem.value, LogDeletedNotice);
+    DeleteJson(cat, elem.value, LogDeletedNotice);
   }, false);
   document.querySelector("#input_" + cat + "_getall").click();
 }
@@ -321,55 +320,51 @@ function SwitchNoticesTarget(opt) {
 }
 
 function DateTimeLocal () {
-  var idt = document.querySelector('#input_n_target_date').value + 'T' +
-    document.querySelector('#input_n_target_time').value + ':00.000Z';
+  var idt = document.querySelector('#input_n_targets_date').value + 'T' +
+    document.querySelector('#input_n_targets_time').value + ':00.000Z';
   var idtd = new Date(idt);
   document.querySelector('#input_n_target').innerText = idtd.toString();
 }
 
 window.addEventListener('load', function(event) {
-  document.querySelector('#input_n_post').addEventListener('click',
+  document.querySelector('#input_notices_post').addEventListener('click',
     function (e) {
       PostJson('notices', GetInputNotice, ShowNotice); }, false);
-  document.querySelector('#input_n_delete').addEventListener('click',
-    function (e) {DeleteItems("n"); }, false);
-  document.querySelector('#input_n_getall').addEventListener('click',
+  document.querySelector('#input_notices_getall').addEventListener('click',
     function (e) {
       GetJsonForAll('notices', ShowNoticeList); }, false);
 
-  document.querySelector('#input_t_post').addEventListener('click',
+  document.querySelector('#input_targets_post').addEventListener('click',
     function (e) {
       PostJson('targets', GetInputTarget, ShowTarget); }, false);
-  document.querySelector('#input_t_delete').addEventListener('click',
-    function (e) {DeleteItems("t"); }, false); 
-  document.querySelector('#input_t_getall').addEventListener('click',
+  document.querySelector('#input_targets_getall').addEventListener('click',
     function (e) {
       GetJsonForAll('targets', ShowTargetList); }, false);
-  document.querySelector('#input_t_addline').addEventListener('click',
-    function (e) {
-      document.querySelector('#t_new').style.display = 'table-row-group';
-    }, false);
 
-  document.querySelector('#input_s_post').addEventListener('click',
+  document.querySelector('#input_schemes_post').addEventListener('click',
     function (e) {
       PostJson('schemes', GetInputScheme, ShowScheme); }, false);
-  document.querySelector('#input_s_delete').addEventListener('click',
-    function (e) {DeleteItems("s"); }, false);
-  document.querySelector('#input_s_getall').addEventListener('click',
+  document.querySelector('#input_schemes_getall').addEventListener('click',
     function (e) {
       GetJsonForAll('schemes', ShowSchemeList); }, false);
-  document.querySelector('#input_s_showadd').addEventListener('click',
-    function (e) {AddFormShow('scheme'); }, false);
-  document.querySelector('#input_s_close').addEventListener('click',
-    function (e) {AddFormShow('close'); }, false);
+
+/* showadd/close */
+  ['notices', 'targets', 'schemes'].forEach(function(id) {
+    document.querySelector('#input_' + id + '_showadd').addEventListener('click',
+      function (e) {AddFormShow(id); }, false);
+    document.querySelector('#input_' + id + '_close').addEventListener('click',
+      function (e) {AddFormShow('close'); }, false);
+    document.querySelector('#input_' + id + '_delete').addEventListener('click',
+      function (e) {DeleteItems(id); }, false);
+  }, false);
 
   GetJsonForAll('vapid', GotVapidKey);
   document.querySelector('#input_push_enable').addEventListener('click',
     function (e) {EnableNotification(); }, false);
 
-  document.querySelector('#input_n_target_date').addEventListener('change',
+  document.querySelector('#input_n_targets_date').addEventListener('change',
     function (e) {DateTimeLocal(); }, false);
-  document.querySelector('#input_n_target_time').addEventListener('change',
+  document.querySelector('#input_n_targets_time').addEventListener('change',
     function (e) {DateTimeLocal(); }, false);
 
   ['all', 'queued', 'fired', 'deleted', 'invalid', 'error', 'pushed'].forEach(
@@ -390,8 +385,6 @@ window.addEventListener('load', function(event) {
       GetJsonForAll('notices', ShowNoticeList);
       ContentsShow('list');
     }, false);
-  document.querySelector('#menu_add').addEventListener('click',
-    function (e) {ContentsShow('add'); }, false);
   document.querySelector('#menu_target').addEventListener('click',
     function (e) {
       GetJsonForAll('targets', ShowTargetList);
@@ -409,10 +402,6 @@ window.addEventListener('load', function(event) {
     document.querySelector("#menu_list").click();
   }
 
-  document.querySelector('#menu_dev').addEventListener('click', 
-    function (e) {
-      document.querySelector('#content_info').style.display = 'block';
-    }, false);
   document.querySelector('#info_front').addEventListener('click', 
     function (e) {e.stopPropagation(); }, false);
   document.querySelector('#info_back').addEventListener('click',
