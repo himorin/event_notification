@@ -64,6 +64,9 @@ div.operation .mi_inline .material-icons {
   display: none;
 }
 
+div#content_help h4 {margin-left: 1.5em; }
+div#content_help p, div#content_help ul {margin-left: 3em; }
+
 table.list {
   width: 90%;
   margin-left: auto;
