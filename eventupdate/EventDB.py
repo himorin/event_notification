@@ -51,7 +51,7 @@ class EventDB(object):
 
     def ListNoticesBySource(self, source):
         cursor = self._get_new_cursor()
-        cursor.execute("SELECT * FROM schemes WHERE source = %s AND fired = 0",
+        cursor.execute("SELECT * FROM notices WHERE source = %s AND fired = 0",
             [source])
         row_ids = cursor.column_names
         ret = {}
