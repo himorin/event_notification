@@ -99,7 +99,9 @@ class Sender:
                 err_ext = e.response.json()
                 print("Error details: {}:{} {}".format(err_ext.code, 
                     err_ext.errno, err_ext.message))
-            ret['error'] = err_ext.code
+                ret['error'] = err_ext.code
+            else:
+                ret['error'] = e
             ret['status'] = 'error'
         return ret
 
