@@ -82,7 +82,7 @@ if __name__ == "__main__":
     dbh.Connect(site_config)
     for id in events.keys():
         event = events[id]
-        if event['summary'].find('canceled') > -1:
+        if event['summary'].find('cancel') > -1:
             notices = dbh.ListNoticesBySource(event['icaluid'])
             for notice in notices.keys():
                 dbh.CancelNotice(notice)
