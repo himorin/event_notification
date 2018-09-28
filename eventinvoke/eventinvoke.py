@@ -33,7 +33,9 @@ if __name__ == "__main__":
     notices_ret = {}
     for id in notices.keys():
         target = dbh.GetTargetInfo(notices[id]['tid'])
-        if target['category'] == 'webpush':
+        if target == None:
+            continue
+        elif target['category'] == 'webpush':
             ret = send.SendWebPush(notices[id], target, site_config)
         elif target['category'] == 'sms':
             ret = send.SendSMS(notices[id], target, site_config)
