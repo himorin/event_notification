@@ -46,10 +46,10 @@ def ListUpdatedEvents(site_config):
         start = event['start'].get('dateTime', event['start'].get('date'))
         found = {}
         found['start'] = start
-        found['url'] = event['location']
-        found['id'] = event['id']
-        found['summary'] = event['summary']
-        found['icaluid'] = event['iCalUID']
+        found['url'] = event.get('location', '')
+        found['id'] = event.get('id', 'nullid@ical')
+        found['summary'] = event.get('summary', '')
+        found['icaluid'] = event.get('iCalUID', 'nulluuid@ical')
         found['updated'] = event['updated']
         ev_update = datetime.datetime.strptime(found['updated'], 
             '%Y-%m-%dT%H:%M:%S.%fZ')
