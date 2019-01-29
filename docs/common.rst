@@ -33,7 +33,7 @@ and each are wrapped as json object.
   - `api_fromnum`: Caller phone number
   - `token`: Account access token
 
-- `vapid`
+- `vapid` (paste output txt file contents to values of keys)
 
   - `private`: server private key for VAPID ECDH
   - `public`: server public key for VAPID ECDH
@@ -41,6 +41,8 @@ and each are wrapped as json object.
 
 VAPID key generation
 ------
+
+Paste contents of output txt files directly into json value for keys.
 
 ::
 
