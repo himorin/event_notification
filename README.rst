@@ -111,5 +111,7 @@ Dependencies
 - py-vapid (for VAPID configuration)
 - python oauth2client
 - python google-api-python-client
+- python mysql.connector
+- python twilio
 - perl JSON
 
