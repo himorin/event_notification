@@ -44,6 +44,7 @@ VAPID key generation
 
 ::
 
+  openssl ecparam -genkey -name prime256v1 -out private_key.pem
   openssl ec -in private_key.pem -outform DER \
     | tail -c +8 | head -c 32 | base64 -w 0 >> private_key.txt 
   openssl ec -in private_key.pem -pubout -outform DER \
