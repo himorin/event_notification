@@ -88,7 +88,7 @@ class Sender:
                 data = json.dumps(send_dat),
                 vapid_private_key = conf['vapid_private'],
                 vapid_claims = {
-                    "sub": conf['vapid_mailto'],
+                    "sub": "mailto:{}".format(conf['vapid_mailto']),
                 }
             )
             ret['sid'] = send_dat['tag']

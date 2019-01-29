@@ -37,6 +37,7 @@ and each are wrapped as json object.
 
   - `private`: server private key for VAPID ECDH
   - `public`: server public key for VAPID ECDH
+  - `mailto`: valid email address for admin contact
 
 
 VAPID key generation
